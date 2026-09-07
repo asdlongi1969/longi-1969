@@ -1,0 +1,200 @@
+---
+// Conto alla rovescia alla prima giornata. Vive nel browser per lo stesso
+// motivo di DirettaLive: il sito e' statico e un conteggio fatto in build
+// resterebbe fermo all'ora della pubblicazione. In build si decide solo se
+// la sezione esiste: a debutto passato non viene nemmeno generata.
+import stagione from "../data/stagione.json";
+import { debuttoPassato } from "../lib/debutto";
+
+const debutto = new Date(stagione.debutto);
+const mostra = !debuttoPassato(Date.now(), debutto.getTime());
+const quando = mostra
+  ? debutto.toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long", timeZone: "Europe/Rome" })
+  : "";
+---
+{mostra && (
+  <section class="debutto" data-debutto data-quando={stagione.debutto} aria-labelledby="debutto-title">
+    <div class="inner" data-reveal>
+      <p class="kicker font-display">
+        <span class="spia" aria-hidden="true"></span>
+        Stagione 2026/27
+      </p>
+      <h2 id="debutto-title" class="font-display">{stagione.titolo}</h2>
+
+      <p class="conto" aria-live="off">
+        <span class="sr-only">Mancano </span>
+        <span class="blocco">
+          <span class="cifra font-display" data-giorni>--</span>
+          <span class="etichetta">giorni</span>
+        </span>
+        <span class="blocco">
+          <span class="cifra font-display" data-ore>--</span>
+          <span class="etichetta">ore</span>
+        </span>
+        <span class="blocco">
+          <span class="cifra font-display" data-minuti>--</span>
+          <span class="etichetta">minuti</span>
+        </span>
+      </p>
+
+      <p class="quando font-display">{quando}</p>
+      <p class="sotto">{stagione.sottotitolo}</p>
+    </div>
+  </section>
+)}
+
+<style>
+  /* Sezione "drenched": rosso pieno dello scudo, bordi a taglio diagonale
+     come la Spaccatura. Contrasto --text su --rosso-fondo: 11.1:1 (DESIGN.md). */
+  .debutto {
+    background: var(--rosso-fondo);
+    clip-path: polygon(0 0, 100% 4%, 100% 100%, 0 96%);
+    padding: clamp(3.5rem, 9vw, 6rem) clamp(1rem, 4vw, 2.5rem);
+  }
+  .inner {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 0.5rem;
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--oro);
+  }
+  .spia {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--oro);
+    box-shadow: 0 0 10px var(--oro);
+    animation-name: spia-lampeggia;
+    animation-duration: 2.4s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+  }
+  @keyframes spia-lampeggia {
+    0%, 100% { opacity: 0.35; }
+    50% { opacity: 1; }
+  }
+  .debutto h2 {
+    font-size: clamp(1.6rem, 4vw, 2.5rem);
+    margin: 0 0 clamp(1.25rem, 4vw, 2rem);
+  }
+  .conto {
+    display: flex;
+    justify-content: center;
+    gap: clamp(1rem, 5vw, 3rem);
+    margin: 0;
+    max-width: none;
+  }
+  .blocco {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 3.5ch;
+  }
+  .cifra {
+    font-size: clamp(3rem, 12vw, 6.5rem);
+    line-height: 1;
+    color: var(--oro);
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 22px color-mix(in oklch, var(--oro) 45%, transparent);
+  }
+  .etichetta {
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: color-mix(in oklch, var(--text) 80%, transparent);
+    margin-top: 0.3rem;
+  }
+  .quando {
+    margin: clamp(1rem, 3vw, 1.5rem) 0 0.5rem;
+    font-size: clamp(1.05rem, 2.6vw, 1.4rem);
+    text-transform: capitalize;
+    max-width: none;
+  }
+  .sotto {
+    margin: 0 auto;
+    max-width: 55ch;
+    font-size: 0.95rem;
+    color: color-mix(in oklch, var(--text) 82%, transparent);
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* Entrata legata allo scroll. SOLO proprieta' animation-* estese
+     (vincolo del minificatore, vedi DESIGN.md > Motion). */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .inner {
+        animation-name: debutto-entra;
+        animation-duration: 1s;
+        animation-fill-mode: both;
+        animation-timing-function: var(--ease-out-quart);
+        animation-timeline: view();
+        animation-range: entry 0% cover 35%;
+      }
+    }
+  }
+  @keyframes debutto-entra {
+    from { opacity: 0; transform: translateY(2rem); }
+    to { opacity: 1; transform: none; }
+  }
+  /* Ripiego senza animation-timeline: Base.astro marca [data-reveal]. */
+  .inner.reveal-js {
+    opacity: 0;
+    transform: translateY(2rem);
+    transition: opacity 0.9s var(--ease-out-quart), transform 0.9s var(--ease-out-quart);
+  }
+  .inner.reveal-on {
+    opacity: 1;
+    transform: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .spia { animation-name: none; opacity: 0.8; }
+  }
+</style>
+
+<script>
+  import { spezzaTempo, debuttoPassato } from "../lib/debutto";
+
+  const box = document.querySelector<HTMLElement>("[data-debutto]");
+  if (box) {
+    const quando = new Date(box.dataset.quando ?? "").getTime();
+    const giorni = box.querySelector<HTMLElement>("[data-giorni]");
+    const ore = box.querySelector<HTMLElement>("[data-ore]");
+    const minuti = box.querySelector<HTMLElement>("[data-minuti]");
+    const pad = (n: number) => String(n).padStart(2, "0");
+
+    const aggiorna = () => {
+      if (debuttoPassato(Date.now(), quando)) {
+        // Il giorno e' arrivato (o la data e' rotta): la sezione sparisce,
+        // il tabellone della prossima partita prende il suo posto.
+        box.hidden = true;
+        return false;
+      }
+      const t = spezzaTempo(quando - Date.now());
+      if (giorni) giorni.textContent = String(t.giorni);
+      if (ore) ore.textContent = pad(t.ore);
+      if (minuti) minuti.textContent = pad(t.minuti);
+      return true;
+    };
+
+    if (aggiorna()) {
+      const timer = setInterval(() => {
+        if (!aggiorna()) clearInterval(timer);
+      }, 30_000);
+    }
+  }
+</script>
