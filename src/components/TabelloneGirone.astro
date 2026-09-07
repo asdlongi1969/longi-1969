@@ -1,0 +1,184 @@
+---
+// Le dodici squadre del girone come tabellone a palette anni '70: quando
+// la sezione entra in vista, ogni lettera scorre l'alfabeto e si ferma su
+// quella giusta, una riga dopo l'altra. Voce "d'annata" del brand
+// (DESIGN.md), nessun parente sul sito gemello (che ha il nastro cinetico).
+// Senza JS o con reduced-motion i nomi sono scritti da subito.
+import girone from "../data/girone.json";
+import societa from "../data/societa.json";
+
+const noi = societa.denominazioneBreve;
+const pad = (n: number) => String(n).padStart(2, "0");
+---
+<section class="girone" aria-labelledby="girone-title">
+  <div class="inner">
+    <p class="kicker">Stagione {girone.stagione}</p>
+    <h2 id="girone-title" class="font-display">{girone.nome}</h2>
+
+    <ol class="tabellone" data-tabellone>
+      {girone.squadre.map((squadra, i) => (
+        <li class:list={["riga", { noi: squadra === noi }]}>
+          <span class="pos font-display" aria-hidden="true">{pad(i + 1)}</span>
+          <span class="nome">
+            <span class="sr-only">{squadra}</span>
+            <span class="lettere font-display" aria-hidden="true">
+              {[...squadra.toUpperCase()].map((c) => (
+                <span class="palletta" data-target={c}>{c}</span>
+              ))}
+            </span>
+          </span>
+        </li>
+      ))}
+    </ol>
+
+    <p class="rimando"><a href="/stagione">Classifica e risultati</a></p>
+  </div>
+</section>
+
+<style>
+  .girone {
+    padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 4vw, 2.5rem);
+  }
+  .inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .kicker {
+    color: var(--oro);
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin: 0 0 0.35rem;
+  }
+  .girone h2 {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    margin: 0 0 1.5rem;
+  }
+  .tabellone {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.4rem 2.5rem;
+  }
+  @media (min-width: 720px) {
+    .tabellone {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .riga {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.25rem 0;
+    border-bottom: 1px solid color-mix(in oklch, var(--oro) 18%, transparent);
+  }
+  .pos {
+    color: var(--oro);
+    font-size: 0.95rem;
+    min-width: 2ch;
+    font-variant-numeric: tabular-nums;
+  }
+  .lettere {
+    display: inline-flex;
+    gap: 2px;
+    white-space: nowrap;
+    font-size: clamp(1rem, 2.6vw, 1.45rem);
+    line-height: 1.4;
+  }
+  /* Ogni palletta e' una targhetta scura con la cerniera orizzontale al
+     centro, come le palette vere. Larghezza fissa: le lettere che scorrono
+     non devono far ballare la riga. */
+  .palletta {
+    display: inline-block;
+    min-width: 0.78em;
+    text-align: center;
+    padding: 0 0.06em;
+    border-radius: 2px;
+    background: linear-gradient(
+      to bottom,
+      var(--surface) 0 48%,
+      var(--bg) 48% 52%,
+      var(--surface) 52% 100%
+    );
+  }
+  .riga.noi .palletta {
+    color: var(--bg);
+    background: linear-gradient(
+      to bottom,
+      var(--oro) 0 48%,
+      color-mix(in oklch, var(--oro) 70%, var(--bg)) 48% 52%,
+      var(--oro) 52% 100%
+    );
+  }
+  .riga.noi .pos {
+    color: var(--text);
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .rimando {
+    margin: 1.5rem 0 0;
+  }
+  .rimando a {
+    color: var(--oro);
+    text-decoration: none;
+  }
+  .rimando a:hover,
+  .rimando a:focus-visible {
+    text-decoration: underline;
+  }
+</style>
+
+<script>
+  import { sequenza } from "../lib/palette";
+
+  const tabellone = document.querySelector<HTMLElement>("[data-tabellone]");
+  if (tabellone && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const righe = [...tabellone.querySelectorAll<HTMLElement>(".riga")];
+
+    // Una riga alla volta: un solo timer per riga fa scorrere tutte le sue
+    // pallette insieme; ognuna si ferma quando arriva alla sua lettera.
+    // Lo spazio si scrive come spazio unificatore: una inline-block con un
+    // solo spazio normale collasserebbe.
+    const mostra = (el: HTMLElement, c: string) => { el.textContent = c === " " ? " " : c; };
+    const gira = (riga: HTMLElement) => {
+      const pallette = [...riga.querySelectorAll<HTMLElement>(".palletta")].map((el) => ({
+        el,
+        passi: sequenza(el.dataset.target ?? " "),
+      }));
+      let k = 0;
+      const timer = setInterval(() => {
+        let vive = false;
+        for (const { el, passi } of pallette) {
+          if (k < passi.length) {
+            mostra(el, passi[k]);
+            vive = true;
+          }
+        }
+        if (!vive) clearInterval(timer);
+        k++;
+      }, 45);
+    };
+
+    // Pallette in bianco SOLO a script attivo: senza JS i nomi restano
+    // leggibili da subito (stesso principio del coro in storia.astro).
+    for (const p of tabellone.querySelectorAll<HTMLElement>(".palletta")) mostra(p, " ");
+
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return;
+        io.disconnect();
+        righe.forEach((riga, i) => setTimeout(() => gira(riga), i * 120));
+      },
+      { threshold: 0.25 }
+    );
+    io.observe(tabellone);
+  }
+</script>

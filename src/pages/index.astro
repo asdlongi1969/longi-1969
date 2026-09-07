@@ -9,6 +9,7 @@ import NextMatch from "../components/NextMatch.astro";
 import DirettaLive from "../components/DirettaLive.astro";
 import Debutto from "../components/Debutto.astro";
 import Rinascita from "../components/Rinascita.astro";
+import TabelloneGirone from "../components/TabelloneGirone.astro";
 
 const news = (await getCollection("news"))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
@@ -41,6 +42,8 @@ const news = (await getCollection("news"))
     <Rinascita />
 
     <Spaccatura inverti />
+
+    <TabelloneGirone />
 
     <SponsorStrip />
   </main>
