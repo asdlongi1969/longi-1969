@@ -16,7 +16,7 @@ const nomeTransizione = `news-${post.id.replace(/[^a-zA-Z0-9_-]/g, "-")}`;
     solida tagliata in diagonale rosso/blu come lo scudo. La data e' un
     cartellino d'oro inclinato a cavallo del taglio. Niente titolo in
     sovraimpressione sulla foto (quella e' la voce del sito gemello). */}
-<a href={`/news/${post.id}/`} class="news-card" class:list={{ "no-cover": !cover }}>
+<a href={`/news/${post.id}/`} class="news-card" class:list={{ "no-cover": !cover }} data-reveal>
   {cover && (
     <div class="foto-wrap">
       <img src={cover} alt={coverAlt ?? ""} class="cover" loading="lazy" style={`view-transition-name: ${nomeTransizione}`} />
