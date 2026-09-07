@@ -10,10 +10,14 @@ import DirettaLive from "../components/DirettaLive.astro";
 import Debutto from "../components/Debutto.astro";
 import Rinascita from "../components/Rinascita.astro";
 import TabelloneGirone from "../components/TabelloneGirone.astro";
+import MuroRosa from "../components/MuroRosa.astro";
+import PlayerDialog from "../components/PlayerDialog.astro";
+import { ordinaRosa } from "../lib/rosa";
 
 const news = (await getCollection("news"))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 3);
+const rosa = ordinaRosa(await getCollection("giocatori"));
 ---
 {/* Ordine diverso dal sito gemello: dopo l'hero vengono SUBITO le partite
     (quello che il tifoso cerca la domenica), poi le notizie a mosaico. */}
@@ -45,7 +49,22 @@ const news = (await getCollection("news"))
 
     <TabelloneGirone />
 
+    {rosa.length > 0 && (
+      <section class="rosa-home" aria-labelledby="rosa-title">
+        <div class="section-inner">
+          <h2 id="rosa-title" class="font-display">La rosa</h2>
+        </div>
+        <MuroRosa players={rosa} />
+        <div class="section-inner">
+          <p class="all-news"><a href="/squadra">Tutta la squadra e lo staff</a></p>
+        </div>
+      </section>
+    )}
+
+    <Spaccatura />
+
     <SponsorStrip />
+    <PlayerDialog />
   </main>
 </Base>
 <style>
@@ -55,6 +74,13 @@ const news = (await getCollection("news"))
   .section-inner {
     max-width: 1200px;
     margin: 0 auto;
+  }
+  .rosa-home {
+    padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 4vw, 2.5rem) clamp(2rem, 6vw, 4rem);
+  }
+  .rosa-home h2 {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    margin: 0 0 0.5rem;
   }
   .news-section h2 {
     font-size: clamp(1.75rem, 4vw, 2.5rem);
