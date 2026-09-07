@@ -12,6 +12,11 @@ body {
   font-family: var(--font-body);
   line-height: 1.6;
 }
+/* Niente scorrimento orizzontale su telefono: la fascia sponsor ruotata e i
+   tabelloni partita traslati prima del wipe sporgevano di qualche pixel oltre
+   il bordo (386px su 375). `clip` e non `hidden`: non crea uno scroll
+   container, quindi hero e palco sticky continuano a funzionare. */
+main { overflow-x: clip; }
 p { max-width: 70ch; }
 h1, h2, h3 { font-family: var(--font-display); line-height: 1.05; }
 .font-display { font-family: var(--font-display); }
