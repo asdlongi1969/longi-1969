@@ -1,0 +1,206 @@
+---
+// "Dal 1969 a oggi": le tappe della rinascita passano una alla volta su un
+// palco fermo mentre lo scroll scorre; intanto il taglio rossoblu' dello
+// scudo attraversa il palco da sinistra a destra. E' l'anteprima della
+// pagina Storia, con gli stessi dati (storia.json) e la stessa voce (anni
+// giganti in slab).
+//
+// Meccanica: la pista e' alta (n + 1) schermate e porta una view-timeline
+// con nome; il palco e' sticky. Ogni quadro si accende nella sua fetta
+// della corsa "contain" (quando la pista copre tutto lo schermo). Senza
+// animation-timeline, o con reduced-motion, la pista si srotola: quadri
+// impilati, tutti visibili, niente sticky. E' il layout di base, il palco
+// e' il progressive enhancement.
+import storia from "../data/storia.json";
+
+// Solo gli anni secchi a quattro cifre: i periodi ("1970-2021") e la
+// stagione in corso ("2026/27") restano alla pagina Storia.
+const tappe = storia.tappe.filter((t) => /^\d{4}$/.test(t.anno));
+const n = tappe.length;
+---
+{n > 1 && (
+  <section class="rinascita" aria-labelledby="rinascita-title" style={`--n:${n}`}>
+    <div class="pista">
+      <div class="palco">
+        <span class="taglio" aria-hidden="true"></span>
+        <h2 id="rinascita-title" class="font-display">Dal 1969 a oggi</h2>
+        <div class="quadri">
+          {tappe.map((t, i) => (
+            <article class="quadro" style={`--i:${i}`}>
+              <span class="anno font-display">{t.anno}</span>
+              <h3 class="font-display">{t.titolo}</h3>
+              <p>{t.testo}</p>
+            </article>
+          ))}
+        </div>
+        <ol class="tacche" aria-hidden="true">
+          {tappe.map((t, i) => (
+            <li class="tacca font-display" style={`--i:${i}`}>{t.anno}</li>
+          ))}
+        </ol>
+        <p class="rimando"><a class="cta" href="/storia">La storia completa</a></p>
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  /* LAYOUT DI BASE (tutti i browser, reduced-motion): pista srotolata. */
+  .palco {
+    display: grid;
+    gap: clamp(2rem, 5vw, 3rem);
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: clamp(3rem, 8vw, 5rem) clamp(1rem, 4vw, 2.5rem);
+    text-align: center;
+  }
+  .palco h2 {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    margin: 0;
+  }
+  .quadri {
+    display: grid;
+    gap: clamp(2rem, 6vw, 4rem);
+  }
+  .quadro {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .anno {
+    display: block;
+    font-size: clamp(4rem, 18vw, 12rem);
+    line-height: 0.85;
+    color: var(--oro);
+    font-variant-numeric: tabular-nums;
+  }
+  .quadro h3 {
+    font-size: clamp(1.4rem, 3.5vw, 2.25rem);
+    margin: 0.5rem 0;
+  }
+  .quadro p {
+    margin: 0 auto;
+    max-width: 60ch;
+  }
+  .taglio,
+  .tacche {
+    display: none;
+  }
+  .rimando {
+    margin: 0;
+    max-width: none;
+  }
+  .cta {
+    display: inline-block;
+    padding: 0.8rem 2rem;
+    background: var(--oro);
+    color: var(--bg);
+    font-family: var(--font-display);
+    text-decoration: none;
+    font-size: 1.1rem;
+  }
+
+  /* PALCO FISSO: solo dove esistono le animazioni scroll-driven e il
+     movimento e' gradito. SOLO proprieta' animation-* estese (vincolo del
+     minificatore, vedi DESIGN.md > Motion). */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .pista {
+        height: calc((var(--n) + 1) * 100vh);
+        view-timeline-name: --rinascita;
+        view-timeline-axis: block;
+      }
+      .palco {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow: hidden;
+        isolation: isolate;
+        max-width: none;
+        gap: 0;
+        grid-template-rows: auto 1fr auto auto;
+        padding: clamp(4.5rem, 12vh, 7rem) clamp(1rem, 4vw, 2.5rem) clamp(2rem, 6vh, 3rem);
+      }
+      /* Il taglio dello scudo: un pannello largo 220vw con la diagonale al
+         centro. Da -25% a +25% della sua larghezza la diagonale attraversa
+         tutto lo schermo: si parte nel blu notte, si finisce nel rosso. */
+      .taglio {
+        display: block;
+        position: absolute;
+        inset: 0 -60vw 0 -60vw;
+        z-index: -1;
+        background: linear-gradient(102deg, var(--rosso-fondo) 0 50%, var(--bg) 50% 100%);
+        animation-name: taglio-passa;
+        animation-duration: 1s;
+        animation-fill-mode: both;
+        animation-timing-function: linear;
+        animation-timeline: --rinascita;
+        animation-range: contain 0% contain 100%;
+      }
+      .quadri {
+        align-content: center;
+        gap: 0;
+      }
+      .quadro {
+        grid-area: 1 / 1;
+        animation-name: quadro-passa;
+        animation-duration: 1s;
+        animation-fill-mode: both;
+        animation-timing-function: linear;
+        animation-timeline: --rinascita;
+        animation-range: contain calc(var(--i) * 100% / var(--n)) contain calc((var(--i) + 1) * 100% / var(--n));
+      }
+      /* L'ultimo quadro resta acceso: e' quello che si vede quando il palco
+         si sgancia e la pagina riprende a scorrere. */
+      .quadro:last-child {
+        animation-name: quadro-resta;
+      }
+      .tacche {
+        display: flex;
+        justify-content: center;
+        gap: clamp(0.75rem, 3vw, 1.5rem);
+        list-style: none;
+        margin: 0 0 1.25rem;
+        padding: 0;
+        font-size: 0.85rem;
+        color: var(--oro);
+      }
+      .tacca {
+        opacity: 0.35;
+        animation-name: tacca-accesa;
+        animation-duration: 1s;
+        animation-fill-mode: both;
+        animation-timing-function: linear;
+        animation-timeline: --rinascita;
+        animation-range: contain calc(var(--i) * 100% / var(--n)) contain calc(var(--i) * 100% / var(--n) + 4%);
+      }
+      /* Telefoni bassi: il testo della tappa 2026 e' lungo, si taglia a
+         cinque righe per non sfondare il palco. */
+      @media (max-height: 700px) {
+        .quadro p {
+          display: -webkit-box;
+          -webkit-line-clamp: 5;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+      }
+    }
+  }
+  @keyframes taglio-passa {
+    from { transform: translateX(-25%); }
+    to { transform: translateX(25%); }
+  }
+  @keyframes quadro-passa {
+    0% { opacity: 0; transform: translateY(2rem); }
+    20% { opacity: 1; transform: none; }
+    80% { opacity: 1; transform: none; }
+    100% { opacity: 0; transform: translateY(-2rem); }
+  }
+  @keyframes quadro-resta {
+    0% { opacity: 0; transform: translateY(2rem); }
+    20%, 100% { opacity: 1; transform: none; }
+  }
+  @keyframes tacca-accesa {
+    from { opacity: 0.35; }
+    to { opacity: 1; }
+  }
+</style>

@@ -8,6 +8,7 @@ import SponsorStrip from "../components/SponsorStrip.astro";
 import NextMatch from "../components/NextMatch.astro";
 import DirettaLive from "../components/DirettaLive.astro";
 import Debutto from "../components/Debutto.astro";
+import Rinascita from "../components/Rinascita.astro";
 
 const news = (await getCollection("news"))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
@@ -36,6 +37,8 @@ const news = (await getCollection("news"))
         <p class="all-news"><a href="/news">Tutte le news</a></p>
       </div>
     </section>
+
+    <Rinascita />
 
     <Spaccatura inverti />
 

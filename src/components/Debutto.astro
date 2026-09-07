@@ -115,8 +115,12 @@ const quando = mostra
   .quando {
     margin: clamp(1rem, 3vw, 1.5rem) 0 0.5rem;
     font-size: clamp(1.05rem, 2.6vw, 1.4rem);
-    text-transform: capitalize;
     max-width: none;
+  }
+  /* "domenica 27 settembre" arriva tutto minuscolo da toLocaleDateString:
+     maiuscola solo l'iniziale, il mese in italiano resta minuscolo. */
+  .quando::first-letter {
+    text-transform: uppercase;
   }
   .sotto {
     margin: 0 auto;
