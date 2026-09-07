@@ -35,7 +35,7 @@ ogni voce.
 
 | Cosa | Dove finisce | Note |
 |---|---|---|
-| Elenco giocatori completo: nome, ruolo, numero di maglia | Pagina Squadra | Dalle cronache si conoscono solo Antonino Pidalà (attaccante, gol promozione), Sirna e Arangio (portiere), senza numero di maglia né ruolo certo per tutti. Il resto della rosa è un unico segnaposto "Mario Rossi" |
+| Elenco giocatori completo: nome, ruolo, numero di maglia | Pagina Squadra | Dalle cronache si conoscono solo Antonino Pidalà (attaccante, gol promozione), Sirna e Arangio (portiere), senza numero di maglia né ruolo certo per tutti. Il resto della rosa è un unico segnaposto "Mario Rossi". Dal 06/09/2026 il muro della rosa compare anche in home: il segnaposto si vede quindi anche lì, va cancellato dal pannello appena arriva la rosa vera |
 | Foto singole dei giocatori | Pagina Squadra | Ideale: mezzo busto su sfondo neutro, tutte uguali. Senza foto compare una sagoma (già prevista, `public/img/silhouette.svg`) |
 | **Liberatorie firmate per le foto** | - | Obbligatorie per pubblicare i volti. Per i minorenni firma di **ENTRAMBI i genitori** o di chi esercita la responsabilità genitoriale (testo già in `src/pages/privacy.astro`). Senza liberatoria niente foto: la sagoma resta |
 | Staff tecnico e dirigenza: nomi e incarichi | Pagina Squadra | Allenatore, vice, preparatori, dirigenti accompagnatori, presidente ecc. |

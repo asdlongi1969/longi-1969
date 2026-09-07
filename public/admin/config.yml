@@ -191,3 +191,28 @@ collections:
                 widget: "list"
                 hint: "Una etichetta per ogni riga del punteggio, nello stesso ordine, es. Sotto di due."
                 field: { label: "Etichetta", name: "etichetta", widget: "string" }
+
+      - name: "stagione"
+        label: "Conto alla rovescia al debutto"
+        file: "src/data/stagione.json"
+        description: "Il riquadro rosso in home che conta i giorni alla prima giornata. Si spegne da solo quando il giorno arriva."
+        fields:
+          - label: "Giorno del debutto"
+            name: "debutto"
+            widget: "datetime"
+            hint: "Il giorno della prima partita di campionato. Se l'orario non si conosce, lascia mezzanotte: il conto e' ai giorni."
+          - { label: "Titolo", name: "titolo", widget: "string" }
+          - { label: "Sottotitolo", name: "sottotitolo", widget: "text", hint: "Una riga sotto i numeri: girone, avversario se noto, dove si gioca." }
+
+      - name: "girone"
+        label: "Il girone"
+        file: "src/data/girone.json"
+        description: "Le squadre del girone mostrate sul tabellone in home. Si aggiorna a ogni nuova stagione."
+        fields:
+          - { label: "Titolo", name: "nome", widget: "string", hint: "Per esempio: Il girone C." }
+          - { label: "Stagione", name: "stagione", widget: "string", hint: "Per esempio: 2026/27." }
+          - label: "Squadre"
+            name: "squadre"
+            widget: "list"
+            field: { label: "Squadra", name: "squadra", widget: "string" }
+            hint: "Una per riga, nell'ordine in cui devono comparire. Scrivi il Longi con lo stesso nome breve dei Dati della societa', cosi' la sua riga viene evidenziata in oro."

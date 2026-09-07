@@ -109,6 +109,28 @@ raccontate una per una e il riquadro finale sul trofeo.
 
 ---
 
+## Il conto alla rovescia in home
+
+**Dati della società → Conto alla rovescia al debutto**.
+
+È il riquadro rosso in home che conta giorni, ore e minuti alla prima
+partita di campionato. Basta mettere il **giorno del debutto**: se l'orario
+non si conosce lascia mezzanotte, il conto è ai giorni. Quando il giorno
+arriva il riquadro sparisce da solo, non c'è niente da spegnere. Alla
+stagione successiva si rimette la data nuova e torna.
+
+## Il girone in home
+
+**Dati della società → Il girone**.
+
+Il tabellone in home con tutte le squadre del girone. Le squadre si
+scrivono una per riga, nell'ordine in cui devono comparire (di solito
+alfabetico). La riga del Longi si colora d'oro da sola, purché il nome sia
+scritto come il **Nome breve** nei Dati della società (oggi "Longi 1969").
+Da aggiornare a ogni nuova stagione, quando esce la composizione del girone.
+
+---
+
 ## Cose da sapere
 
 **I pulsanti sono in inglese.** Quelli che servono sono tre:

@@ -70,8 +70,12 @@ Voce del brand in tre parole fisiche: **massiccio, d'annata, ruggente**
 
 ## Momenti overdrive
 
-Tre, non di più, stesso principio del sito gemello: pochi momenti di
-spettacolo, il resto veloce e sobrio per farli risaltare.
+Fino al 06/09/2026 la regola era "tre, non di più". Su richiesta del
+cliente la home è diventata un percorso continuo: la regola nuova è **un
+solo effetto per schermata**, tutto legato allo scroll, niente animazioni
+che girano da sole (eccetto spie e frecce di servizio). I tre momenti
+originali restano quelli principali; i momenti della home (sotto) li
+accompagnano senza sovrapporsi.
 
 1. **Hero "il leone si sveglia"** (in arrivo, Task 6, gated su
    riautorizzazione Higgsfield e conferma crediti). Leone d'oro come statua
@@ -102,6 +106,33 @@ Transitions cross-documento riusate (tecnica invisibile condivisa, non
 identitaria): la testata resta ferma, la copertina di una news si trasforma
 nell'immagine dell'articolo.
 
+### Momenti della home (06/09/2026)
+
+Tutti scroll-driven in CSS, tutti con ripiego statico, zero contenuti
+inventati: i dati vengono da `storia.json`, `girone.json`, `stagione.json`.
+
+- **Debutto** (`src/components/Debutto.astro`): conto alla rovescia alla
+  prima giornata, sezione drenched `--rosso-fondo` con bordi obliqui, cifre
+  d'oro tabulari con glow. Si spegne da sola il giorno del debutto (in
+  build non viene generata, nel browser si nasconde).
+- **Rinascita** (`src/components/Rinascita.astro`): palco sticky alto
+  (n+1) schermate, le tappe con anno a quattro cifre passano una alla volta
+  (`view-timeline-name: --rinascita`, `animation-range: contain` a fette),
+  il taglio rossoblù dello scudo attraversa il palco da sinistra a destra.
+  Senza `animation-timeline` o con reduced-motion: quadri impilati.
+- **Tabellone a palette** (`src/components/TabelloneGirone.astro`): le
+  squadre del girone come tabellone da stazione anni '70, ogni lettera
+  scorre l'alfabeto (`src/lib/palette.ts`) e si ferma su quella giusta,
+  riga dopo riga; la riga del Longi in oro. Voce "d'annata" del brand; il
+  gemello ha il nastro cinetico, che qui resta assente.
+- **News sfalsate**: le tre card entrano col taglio obliquo in tre finestre
+  diverse della stessa corsa (`entry 0/15/30%`); si anima solo opacity e
+  clip-path, il transform resta all'hover.
+- **Freccia "scorri"** nell'hero: il primo frame è quasi nero, la freccia
+  dice che si deve scorrere e sparisce dopo i primi frame.
+- **Muro rossoblù in home**: stesso componente di `/squadra`, ordinamento
+  condiviso in `src/lib/rosa.ts`.
+
 
 ### Firma di differenziazione dal gemello Galati (27/08/2026)
 
@@ -128,6 +159,12 @@ Grammatica propria: "tutto taglia in diagonale, la tana respira braci d'oro".
   pronto (stesso punto di innesto in `index.astro`).
 - **Spaccatura**: divisore a taglio diagonale scroll-driven, prop `inverti`
   per alternare quale metà è rossa e quale blu.
+- **Debutto**: conto alla rovescia alla prima giornata (dati in
+  `src/data/stagione.json`, logica in `src/lib/debutto.ts`).
+- **Rinascita**: palco sticky delle tappe di `storia.json` (solo anni a
+  quattro cifre).
+- **TabelloneGirone**: tabellone a palette delle squadre del girone (dati in
+  `src/data/girone.json`, logica in `src/lib/palette.ts`).
 - **PlayerWall**: parete curva 3D per la rosa, fila orizzontale, le schede
   ai bordi si inclinano verso l'interno via `rotateY`/`translateZ`/
   `brightness` calcolati sullo scroll, quella al centro resta dritta e a
