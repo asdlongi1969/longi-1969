@@ -21,6 +21,10 @@ const righeClaim = societa.claimHome.split(/\r?\n/).filter(Boolean);
       </p>
       <a class="cta" href="/storia">La storia</a>
     </div>
+    <p class="scorri font-display" id="hero-scorri" aria-hidden="true">
+      Scorri
+      <span class="freccia"></span>
+    </p>
   </div>
 </section>
 <style>
@@ -37,7 +41,13 @@ const righeClaim = societa.claimHome.split(/\r?\n/).filter(Boolean);
   .overlay .claim { margin: 0.5rem 0 0; color: var(--oro); font-size: clamp(1.05rem, 2.6vw, 1.4rem); line-height: 1.3; }
   .overlay .claim .linea { display: block; }
   .cta { display: inline-block; margin-top: 1.5rem; padding: 0.8rem 2rem; background: var(--oro); color: var(--bg); font-family: var(--font-display); text-decoration: none; font-size: 1.1rem; }
-  @media (prefers-reduced-motion: reduce) { .hero { height: 100vh; } .overlay { opacity: 1; transform: none; } }
+  /* Il primo frame e' quasi nero: la freccia dice che si deve scorrere.
+     Compare quando il canvas e' pronto, sparisce dopo i primi frame. */
+  .scorri { position: absolute; inset: auto 0 5vh 0; margin: 0; text-align: center; color: var(--oro); font-size: 0.8rem; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0; transition: opacity 0.5s var(--ease-out-quart); pointer-events: none; max-width: none; }
+  .scorri.on { opacity: 1; }
+  .freccia { display: block; width: 0.75rem; height: 0.75rem; margin: 0.5rem auto 0; border-right: 2px solid var(--oro); border-bottom: 2px solid var(--oro); animation-name: freccia-batte; animation-duration: 1.6s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+  @keyframes freccia-batte { 0%, 100% { transform: translateY(0) rotate(45deg); } 50% { transform: translateY(0.4rem) rotate(45deg); } }
+  @media (prefers-reduced-motion: reduce) { .hero { height: 100vh; } .overlay { opacity: 1; transform: none; } .scorri { display: none; } }
 </style>
 <script>
   import { framePosition, lerp } from "../lib/scrub";
@@ -46,6 +56,7 @@ const righeClaim = societa.claimHome.split(/\r?\n/).filter(Boolean);
   const canvas = document.getElementById("hero-canvas") as HTMLCanvasElement;
   const fallback = document.getElementById("hero-fallback") as HTMLImageElement;
   const overlay = document.getElementById("hero-overlay")!;
+  const scorri = document.getElementById("hero-scorri")!;
 
   // Indice 1-based (contratto di frameIndex) -> nome file 0-based su disco.
   const frameFile = (dir: string, i: number) => `/hero-frames/${dir}/f-${String(i - 1).padStart(3, "0")}.webp`;
@@ -75,6 +86,7 @@ const righeClaim = societa.claimHome.split(/\r?\n/).filter(Boolean);
     await Promise.all(Array.from({ length: 10 }, (_, k) => load(k + 1)));
     canvas.style.display = "block";
     fallback.style.display = "none";
+    scorri.classList.add("on");
     for (let i = 11; i <= count; i++) load(i); // resto in background
 
     const ctx = canvas.getContext("2d")!;
@@ -114,6 +126,7 @@ const righeClaim = societa.claimHome.split(/\r?\n/).filter(Boolean);
         if (imgHi && imgHi !== imgLo && mix > 0.01) paint(imgHi, mix);
       }
       overlay.classList.toggle("on", target >= count - 2);
+      scorri.classList.toggle("on", target < 4);
       if (Math.abs(current - target) > 0.01) raf = requestAnimationFrame(draw);
       else raf = 0;
     }
