@@ -142,13 +142,16 @@ const { players } = Astro.props;
       gap: 2px;
     }
     .lastra {
+      /* `flex: 1` (basis 0%) in colonna azzera l'altezza: qui la basis e'
+         l'altezza della banda, e non cresce. */
+      flex: 0 0 3.4rem;
       height: 3.4rem;
       clip-path: polygon(0 0, 100% 6%, 100% 100%, 0 94%);
       border-inline: none;
     }
     .lastra:hover,
     .lastra:focus-visible {
-      flex-grow: 1;
+      flex-grow: 0;
     }
     .lastra-foto {
       inset: -55% 0 auto auto;
