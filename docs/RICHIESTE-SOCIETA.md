@@ -40,11 +40,11 @@ ogni voce.
 | **Liberatorie firmate per le foto** | - | Obbligatorie per pubblicare i volti. Per i minorenni firma di **ENTRAMBI i genitori** o di chi esercita la responsabilità genitoriale (testo già in `src/pages/privacy.astro`). Senza liberatoria niente foto: la sagoma resta |
 | Staff tecnico e dirigenza: nomi e incarichi | Pagina Squadra | Allenatore, vice, preparatori, dirigenti accompagnatori, presidente ecc. |
 
-## 4. Sponsor (oggi 4 sponsor FITTIZI con loghi disegnati)
+## 4. Sponsor (9 reali inseriti il 25/09/2026, tutti "partner")
 
 | Cosa | Dove finisce | Note |
 |---|---|---|
-| Elenco sponsor reali con livello | `SponsorStrip` in home | Livelli: main (il più grande), tecnico, partner. Decide il club la gerarchia |
+| Livello di ogni sponsor | `SponsorStrip` in home | ANCORA DA CHIEDERE: livelli main (il più grande), tecnico, partner. Decide il club la gerarchia; per ora tutti partner |
 | Logo di ogni sponsor | Fascia sponsor | Meglio se vettoriale o PNG grande su sfondo trasparente; in mancanza, foto nitida dell'insegna |
 | Link al sito/pagina social di ogni sponsor | Fascia sponsor | Se esiste: il logo diventa cliccabile (campo già pronto nel CMS) |
 | Ok scritto degli sponsor alla pubblicazione | - | Basta un messaggio: evita discussioni dopo |
@@ -88,7 +88,7 @@ grep -n '""' src/data/societa.json
 grep -rn "DATI-SOCIETA" src/
 
 # Contenuti demo/fittizi da sostituire
-grep -rln "FITTIZIO" src/content/ public/img/sponsor-demo/
+grep -rln "FITTIZIO" src/content/
 
 # GUID Tuttocampo non ancora generato
 grep -n "INSERIRE-GUID" src/lib/tuttocampo.ts
@@ -100,7 +100,7 @@ grep -n "INSERIRE-" public/admin/config.yml
 | Area | File |
 |---|---|
 | Rosa (1 segnaposto + 3 nomi dalle cronache senza foto/numero) | `src/content/giocatori/*.md` |
-| Sponsor (4, fittizi con loghi disegnati) | `src/content/sponsor/*.md` + `public/img/sponsor-demo/*.svg` |
+| Livelli sponsor (tutti partner in attesa) | `src/content/sponsor/*.md` |
 | Storia 1970-2021 (buco principale, vedi §2) | `src/data/storia.json`, `src/data/pagina-club.json` |
 | Dati legali e contatti | `src/data/societa.json`, marker `DATI-SOCIETA` in `src/pages/privacy.astro` |
 | Stemma (bassa qualità, da vettoriale) | `public/img/stemma.png`, `public/img/stemma-500.png`; vedi `public/img/LEGGIMI.md` |
