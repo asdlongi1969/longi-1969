@@ -33,6 +33,27 @@ const quando = date.toLocaleDateString("it-IT", { day: "numeric", month: "short"
     </a>
   )}
 </article>
+<script>
+  // Instagram comunica l'altezza vera del post (messaggio MEASURE, verificato
+  // il 25/09/2026): il riquadro si adatta invece di restare all'altezza fissa
+  // di ALTEZZA.instagram.
+  addEventListener("message", (e) => {
+    if (e.origin !== "https://www.instagram.com" || typeof e.data !== "string") return;
+    let dati: { type?: string; details?: { height?: number } };
+    try {
+      dati = JSON.parse(e.data);
+    } catch {
+      return;
+    }
+    const altezza = dati.details?.height;
+    if (dati.type !== "MEASURE" || !altezza) return;
+    for (const f of document.querySelectorAll<HTMLIFrameElement>("iframe[src*='instagram.com']")) {
+      if (f.contentWindow === e.source) {
+        f.closest<HTMLElement>("[data-embed]")?.style.setProperty("--embed-h", `${altezza}px`);
+      }
+    }
+  });
+</script>
 <style>
   /* Cornice rossoblu': filo superiore dimezzato come lo scudo, cartellino
      d'oro inclinato come quello delle vecchie card news. */
@@ -55,11 +76,19 @@ const quando = date.toLocaleDateString("it-IT", { day: "numeric", month: "short"
     padding: 0.28rem 0.7rem;
     transform: skewX(-8deg);
   }
+  /* Finche' manca il consenso il segnaposto resta compatto: all'altezza del
+     riquadro vero (fino a 760px) la pagina diventerebbe una fila di scatole
+     vuote. L'altezza piena torna quando EmbedConsenso segna data-attivo. */
+  .social-card :global([data-embed]:not([data-attivo="1"])),
+  .social-card :global(.embed-blocco) {
+    height: auto;
+    min-height: 20rem;
+  }
   .solo-link {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 10rem;
+    min-height: 20rem;
     color: var(--oro);
     border: 1px dashed color-mix(in oklch, var(--oro) 55%, transparent);
   }

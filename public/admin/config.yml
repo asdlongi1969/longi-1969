@@ -43,7 +43,7 @@ collections:
         name: "link"
         widget: "string"
         required: true
-        hint: "Dal social: tocca Condividi (o i tre puntini) e poi Copia link, e incollalo qui. Il post deve essere pubblico: i profili privati e i post dentro i gruppi Facebook non si vedono."
+        hint: "Dal social: tocca Condividi (o i tre puntini) e poi Copia link, e incollalo qui. Il post deve essere pubblico: i profili privati e i post dentro i gruppi Facebook non si vedono. Facebook dal telefono: se sul sito il post compare solo come 'Apri il post', aprilo dal computer e copia l'indirizzo dalla barra in alto."
         pattern: ["^https://([a-z]+\\.)?(instagram\\.com|facebook\\.com|fb\\.watch|tiktok\\.com)/\\S+$", "Serve un link di Instagram, Facebook o TikTok che inizi con https://"]
       - label: "Data"
         name: "date"

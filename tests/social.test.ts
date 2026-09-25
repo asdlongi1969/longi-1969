@@ -33,7 +33,7 @@ describe("riconosci: Facebook", () => {
   const post = "https://www.facebook.com/longi1969/posts/pfbid02abc";
   it("post", () => {
     expect(riconosci(post).src).toBe(
-      `https://www.facebook.com/plugins/post.php?href=${encodeURIComponent(post)}&show_text=true&width=500`
+      `https://www.facebook.com/plugins/post.php?href=${encodeURIComponent(post)}&show_text=true&width=350`
     );
   });
   it("permalink.php e' un post", () => {

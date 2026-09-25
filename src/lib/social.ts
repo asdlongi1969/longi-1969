@@ -22,8 +22,10 @@ export const NOME: Record<Piattaforma | "altro", string> = {
 
 const dominio = (u: URL) => u.hostname.replace(/^(www|m|mobile|web)\./, "");
 
+// 350 e' la larghezza minima del plugin post: con 500 il riquadro usciva a
+// destra da una colonna di ~365px (verificato il 25/09/2026).
 const plugin = (tipo: "post" | "video", link: string) =>
-  `https://www.facebook.com/plugins/${tipo}.php?href=${encodeURIComponent(link)}&show_text=true&width=500`;
+  `https://www.facebook.com/plugins/${tipo}.php?href=${encodeURIComponent(link)}&show_text=true&width=350`;
 
 export function riconosci(link: string): Post {
   let u: URL;
