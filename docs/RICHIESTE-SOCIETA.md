@@ -54,7 +54,7 @@ ogni voce.
 | Cosa | Dove finisce | Note |
 |---|---|---|
 | Nome ufficiale del campo di casa | `src/data/societa.json` (`campoNome`, `campoIndirizzo`) | Oggi vuoto: il sito mostra "campo comunale di Longi (nome da confermare)" in Club e Contatti. Le partite di campionato citate nelle cronache si sono giocate fuori casa (Sant'Agata Militello, Rocca di Caprileone): il campo di Longi non è mai comparso come sede di gara nelle fonti consultate |
-| 15-25 foto belle e recenti | Home, News, Club, Storia | Partite, tifosi, campo, spogliatoio, festeggiamenti del double 2026. Più sono alte di risoluzione meglio è |
+| 15-25 foto belle e recenti | Home, Club, Storia | Partite, tifosi, campo, spogliatoio, festeggiamenti del double 2026. Più sono alte di risoluzione meglio è |
 | Foto del campo di casa | Pagina Club | Un paio, anche panoramiche |
 | Foto di squadra del double 2025/26 | Home, Club, Storia | Se esiste una foto ufficiale della squadra promossa |
 
@@ -64,7 +64,7 @@ ogni voce.
 |---|---|---|
 | Pagina Instagram e/o Facebook ufficiali | `src/data/societa.json` (`instagram`, `facebook`), Footer, Contatti | Non individuate con certezza nella ricerca online: da confermare col club per evitare di linkare profili sbagliati |
 | Dominio (es. longi1969.it) | Indirizzo del sito | **Va registrato a nome del club**, non dello sviluppatore. Vedi `docs/HANDOFF.md` §2.2 |
-| Chi gestirà le news dal pannello | Aggiornamenti | Nome ed email della persona (una o due) che pubblicherà le notizie: riceverà l'invito al pannello di gestione su GitHub |
+| Chi gestirà i post social dal pannello | Aggiornamenti | Nome ed email della persona (una o due) che aggiungerà i post: riceverà l'invito al pannello di gestione su GitHub |
 | Account Tuttocampo | Widget classifica/risultati/marcatori automatici | Serve login (anche gratuito) per generare il GUID del girone su `/WidgetApi`. Procedura in `docs/HANDOFF.md` §2.3; la genera lo sviluppatore, ma serve sapere con quale account entrare |
 
 ## 7. Decisioni da prendere insieme

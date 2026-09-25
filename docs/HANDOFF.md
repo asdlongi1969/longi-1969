@@ -6,7 +6,7 @@ mancanti). La seconda è per lo **sviluppatore** che fa il deploy e la
 manutenzione tecnica.
 
 Stato del progetto a questa consegna: 8 pagine (`/`, `/squadra`, `/stagione`,
-`/news`, `/storia`, `/club`, `/contatti`, `/privacy`), pannello di gestione
+`/social`, `/storia`, `/club`, `/contatti`, `/privacy`), pannello di gestione
 contenuti su `/admin`, `npm run build` e `npm test` verdi. Il sito **non è
 ancora online**: il repository non è nemmeno ancora su GitHub (vedi parte
 sviluppatore), l'hero definitivo non è ancora stato generato e mancano
@@ -29,8 +29,8 @@ confermare") invece di un'informazione inventata.
 ### 1.2 Come si usa `/admin`
 
 Il sito ha un pannello di gestione contenuti (Sveltia CMS) all'indirizzo
-`https://<dominio-del-sito>/admin`. Serve per aggiornare notizie, rosa,
-staff, sponsor, i dati della società, la storia e il riquadro diretta,
+`https://<dominio-del-sito>/admin`. Serve per aggiungere i post social, aggiornare
+rosa, staff, sponsor, i dati della società, la storia e il riquadro diretta,
 **senza toccare codice**.
 
 > **Per chi userà il pannello c'è una guida dedicata e più semplice:
@@ -44,9 +44,9 @@ Poi si entra da `/admin` con *Sign In with GitHub*.
 
 **Cosa si può gestire, e come**:
 
-- **News**: titolo, data, immagine di copertina (opzionale), corpo testo in
-  formato semplice (markdown). Pubblicando, l'articolo appare
-  automaticamente in home (le ultime 3) e in `/news`.
+- **Social**: link di un post pubblico di Instagram, Facebook o TikTok e
+  data (si compila da sola). Il post appare da solo in home (gli ultimi 3) e
+  in `/social`; senza consenso privacy al suo posto c'è un segnaposto.
 - **Rosa**: nome, ruolo (Portiere / Difensore / Centrocampista /
   Attaccante), numero di maglia, foto. I giocatori compaiono in `/squadra`.
 - **Staff**: nome, incarico, foto, ordine di visualizzazione.
@@ -212,15 +212,14 @@ al deploy).
    funzionare.
 4. Collegare il dominio in Netlify: Site settings → Domain management →
    Add custom domain.
-5. Rimuovere il blocco `X-Robots-Tag: noindex, nofollow` in `netlify.toml`
+5. Rimuovere il blocco `X-Robots-Tag: noindex, nofollow` in `public/_headers`
    (oggi presente perché i contenuti sono ancora in parte segnaposto) e
    sistemare `public/robots.txt`.
 
-**Tre cose vanno fatte insieme al dominio**, perché tutte dipendono da
-`site` e prima genererebbero indirizzi su `localhost`: sitemap
-(`@astrojs/sitemap`), feed RSS (`@astrojs/rss`), anteprima social per
-singolo articolo (prop `image` su `Base.astro` passata dalla copertina di
-ogni news).
+**Una cosa va fatta insieme al dominio**, perché dipende da `site` e prima
+genererebbe indirizzi su `localhost`: la sitemap (`@astrojs/sitemap`). Feed
+RSS e anteprima per singolo articolo non servono più: le news sono state
+sostituite dalla pagina Social (25/09/2026).
 
 ### 2.3 Widget Tuttocampo: generare il GUID del girone
 
@@ -313,9 +312,9 @@ npm run guida-pdf     # rigenera docs/Guida-pannello-Longi-1969.pdf da GUIDA-PAN
 Struttura principale:
 - `src/pages/`: le 8 pagine del sito.
 - `src/components/`: HeroProvvisorio, Header, Footer, Spaccatura (divisore
-  scroll-driven), card news/giocatore, parete rosa (`PlayerWall`), fascia
+  scroll-driven), card post social/giocatore, parete rosa (`PlayerWall`), fascia
   sponsor, widget Tuttocampo, DirettaLive, consenso GDPR.
-- `src/content/` + `src/content.config.ts`: le 4 collezioni CMS (news,
+- `src/content/` + `src/content.config.ts`: le 4 collezioni CMS (social,
   giocatori, staff, sponsor), lette da Astro Content Collections.
 - `src/data/`: `societa.json`, `pagina-club.json`, `storia.json`,
   `diretta.json`, contenuti modificabili dal pannello senza toccare codice.
@@ -349,5 +348,5 @@ Struttura principale:
 - [ ] Hero Seedance completato e collegato in `index.astro` (punto 2.4),
       oppure decisione esplicita di andare online con `HeroProvvisorio`
 - [ ] Redattore del club invitato su GitHub e messo alla prova su `/admin`:
-      deve riuscire a pubblicare una news da solo
+      deve riuscire ad aggiungere un post social da solo
 - [ ] `npm test` e `npm run build` verdi
