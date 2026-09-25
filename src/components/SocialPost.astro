@@ -1,0 +1,66 @@
+---
+// Un post social dentro la cornice del sito. Il riquadro ufficiale della
+// piattaforma sta in EmbedConsenso: senza consenso resta un segnaposto
+// leggero, con il link per aprire il post sul social.
+import EmbedConsenso from "./EmbedConsenso.astro";
+import { preparaPost, ALTEZZA, NOME } from "../lib/social";
+
+interface Props {
+  link: string;
+  date: Date;
+}
+const { link, date } = Astro.props;
+const post = await preparaPost(link);
+const nome = NOME[post.piattaforma];
+const quando = date.toLocaleDateString("it-IT", { day: "numeric", month: "short", timeZone: "Europe/Rome" });
+---
+<article class="social-card" data-reveal>
+  <p class="etichetta font-display">
+    <span>{nome}</span> · <time datetime={date.toISOString()}>{quando}</time>
+  </p>
+  {post.src && post.piattaforma !== "altro" ? (
+    <EmbedConsenso
+      src={post.src}
+      title={`Post ${nome} del ${quando}`}
+      servizio={nome}
+      altezza={`${ALTEZZA[post.piattaforma]}px`}
+      apri={link}
+      nota={`Il post è ospitato da ${nome}: per mostrarlo qui il browser deve collegarsi ai loro server, che possono registrare il tuo indirizzo IP e impostare cookie propri.`}
+    />
+  ) : (
+    <a class="solo-link" href={link} target="_blank" rel="noopener noreferrer">
+      Apri il post su {nome}
+    </a>
+  )}
+</article>
+<style>
+  /* Cornice rossoblu': filo superiore dimezzato come lo scudo, cartellino
+     d'oro inclinato come quello delle vecchie card news. */
+  .social-card {
+    position: relative;
+    background: var(--surface);
+    padding: 1.6rem 0.6rem 0.6rem;
+    border-top: 4px solid transparent;
+    border-image: linear-gradient(90deg, var(--rosso) 0 50%, var(--blu) 50% 100%) 1;
+  }
+  .etichetta {
+    position: absolute;
+    top: -0.9rem;
+    left: 1rem;
+    margin: 0;
+    background: var(--oro);
+    color: var(--bg);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    padding: 0.28rem 0.7rem;
+    transform: skewX(-8deg);
+  }
+  .solo-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 10rem;
+    color: var(--oro);
+    border: 1px dashed color-mix(in oklch, var(--oro) 55%, transparent);
+  }
+</style>
