@@ -44,14 +44,14 @@ Campi:
   tiktok.com, vm.tiktok.com, vt.tiktok.com. Suggerimento sotto il campo: il
   post deve essere pubblico; i post dentro i gruppi Facebook non si vedono;
   dal telefono va bene il link di "Copia link"/"Condividi".
-- `data` (datetime, default ora del salvataggio). Ordina i post, più recenti
-  prima. Correggibile per inserire un post vecchio.
+- `date` (datetime, default `{{now}}` = ora del salvataggio; etichetta "Data").
+  Ordina i post, più recenti prima. Correggibile per inserire un post vecchio.
 
 Niente titolo o testo: il post porta il suo. Nel pannello la lista mostra
-`{{data}} · {{link}}` (`summary`); nome file da data e ora
+`{{date | date('DD/MM/YYYY')}} · {{link}}` (`summary`); nome file da data e ora
 (`slug: "{{year}}-{{month}}-{{day}}-{{hour}}{{minute}}{{second}}"`).
 
-Schema Astro: `link: z.string().url()`, `data: z.coerce.date()`. Un link che
+Schema Astro: `link: z.string().url()`, `date: z.coerce.date()`. Un link che
 passa lo schema ma non è riconosciuto NON rompe il build (vedi §2).
 
 ## 2. Dal link al riquadro (`src/lib/social.ts`)
@@ -67,7 +67,7 @@ function riconosci(link: string): Post
 
 | Link | Riquadro (`src`) |
 |---|---|
-| `instagram.com/p/<code>/`, `/reel/<code>/`, `/tv/<code>/`, anche con `?igsh=`, `?img_index=` e prefisso `/<utente>/` | `https://www.instagram.com/p/<code>/embed/captioned/` (`/reel/` per i reel) |
+| `instagram.com/p/<code>/`, `/reel/<code>/`, `/tv/<code>/`, anche con `?igsh=`, `?img_index=` e prefisso `/<utente>/` | `https://www.instagram.com/p/<code>/embed/captioned/` (anche per reel e tv: stesso codice) |
 | `facebook.com/.../posts/...`, `permalink.php?...`, `photo...` | `https://www.facebook.com/plugins/post.php?href=<link>&show_text=true&width=500` |
 | `facebook.com/.../videos/...`, `/reel/...`, `/watch/?v=`, `fb.watch/...` | `https://www.facebook.com/plugins/video.php?href=<link>&show_text=true&width=500` |
 | `tiktok.com/@<utente>/video/<id>` | `https://www.tiktok.com/embed/v2/<id>` |
@@ -91,8 +91,8 @@ verticali, Facebook post più basso; valori fissi per piattaforma, da tarare
 sui riquadri reali (se Instagram manda l'altezza via `postMessage`, si usa).
 
 **Senza consenso**: segnaposto di `EmbedConsenso` (già leggero, nessuna
-richiesta esterna) con testo per i social, pulsante "Mostra i post" e link
-"Apri su <piattaforma>" per chi non vuole acconsentire. "Ricorda la scelta"
+richiesta esterna) con testo per i social, pulsante esistente "Carica <piattaforma>" e link
+"Apri su <piattaforma>" (nuova prop facoltativa `apri` di `EmbedConsenso`) per chi non vuole acconsentire. "Ricorda la scelta"
 è spuntato di default, quindi un clic sblocca tutti i post della pagina e dei
 caricamenti successivi (comportamento esistente). Nessun codice di consenso
 nuovo.
