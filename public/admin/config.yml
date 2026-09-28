@@ -7,7 +7,7 @@
 # DA COMPILARE alla creazione del repository: sostituire UTENTE/REPOSITORY.
 backend:
   name: github
-  repo: tanocalandi96-ciccio/longi-1969
+  repo: asdlongi1969/longi-1969
   branch: main
   # L'accesso passa da due funzioni ospitate sul sito stesso (netlify/functions):
   # servono perche' lo scambio finale con GitHub richiede un segreto che non puo'
