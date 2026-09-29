@@ -1,10 +1,32 @@
 {
-  "titolo": "",
-  "modulo": "auto",
-  "portiere": "",
-  "difensori": [],
-  "centrocampisti": [],
+  "titolo": "Formazione tipo",
+  "modulo": "4-3-3",
+  "portiere": "Roberto Arangio",
+  "difensori": [
+    "Francesco Mangano",
+    "Salvatore Lazzara",
+    "Marco Ricciardo",
+    "Ivan Pidalà"
+  ],
+  "centrocampisti": [
+    "Checco Drago",
+    "Antonino Zingales",
+    "Sebastiano Vicario"
+  ],
   "trequartisti": [],
-  "attaccanti": [],
-  "panchina": []
+  "attaccanti": [
+    "Vittorio Carcione",
+    "Leo Lazzara",
+    "Antonino Pidalà"
+  ],
+  "panchina": [
+    "Basilio Carrabotta",
+    "Paolo Faranda",
+    "Raffaele Cammareri",
+    "Diego Pidalà",
+    "Giuseppe Fabio",
+    "Stefano Sirna",
+    "Pietro Carcione",
+    "Matias De Gregorio"
+  ]
 }
