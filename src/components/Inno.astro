@@ -6,12 +6,15 @@
 // anche prima, tanto meglio). Chi lo ferma non lo sente piu' ripartire da solo
 // (scelta ricordata nel browser); cambiando pagina riprende dal punto in cui
 // era. Il file sta sul sito stesso: nessun servizio esterno, nessun consenso.
+// Su PC scorrere con la rotellina non conta come gesto: finche' l'inno aspetta
+// un clic, il pulsante pulsa e dice "Clicca per l'inno" ("Tocca" sui telefoni).
 ---
 <audio data-inno src="/audio/inno-longi.mp3" preload="none" loop></audio>
 <button type="button" class="inno" data-inno-pulsante aria-pressed="false" aria-label="Fai partire l'inno del Longi">
   <svg class="icona-play" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5v14l11-7z" /></svg>
   <svg class="icona-stop" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="6" y="6" width="12" height="12" rx="1.5" /></svg>
   <span class="testo">Inno</span>
+  <span class="invito"><span class="clic">Clicca</span><span class="tocco">Tocca</span> per l'inno</span>
 </button>
 
 <style>
@@ -37,6 +40,25 @@
     box-shadow: 0 0.4rem 1rem oklch(0 0 0 / 0.4);
     transition: bottom 0.3s var(--ease-out-quart);
   }
+  .inno .invito,
+  .inno[data-attesa] .testo,
+  .inno .tocco {
+    display: none;
+  }
+  .inno[data-attesa] .invito {
+    display: inline;
+  }
+  @media (pointer: coarse) {
+    .inno .clic { display: none; }
+    .inno .tocco { display: inline; }
+  }
+  .inno[data-attesa] {
+    animation: inno-pulsa 1.8s var(--ease-out-quart) infinite;
+  }
+  @keyframes inno-pulsa {
+    0% { box-shadow: 0 0.4rem 1rem oklch(0 0 0 / 0.4), 0 0 0 0 color-mix(in oklch, var(--oro) 70%, transparent); }
+    70%, 100% { box-shadow: 0 0.4rem 1rem oklch(0 0 0 / 0.4), 0 0 0 0.75rem color-mix(in oklch, var(--oro) 0%, transparent); }
+  }
   .inno svg {
     width: 1.1rem;
     height: 1.1rem;
@@ -59,6 +81,7 @@
   }
   @media (prefers-reduced-motion: reduce) {
     .inno { transition: none; }
+    .inno[data-attesa] { animation: none; }
   }
 </style>
 
@@ -78,6 +101,7 @@
 
     const aggiorna = () => {
       const suona = !audio.paused;
+      if (suona) delete pulsante.dataset.attesa;
       pulsante.setAttribute("aria-pressed", String(suona));
       pulsante.setAttribute("aria-label", suona ? "Ferma l'inno del Longi" : "Fai partire l'inno del Longi");
     };
@@ -86,7 +110,11 @@
 
     const EVENTI = ["pointerup", "touchend", "keydown", "click"] as const;
     const smetti = () => EVENTI.forEach((e) => document.removeEventListener(e, alPrimoGesto, true));
-    const prova = () => audio.play().then(smetti, () => {});
+    // Se il browser rifiuta (manca ancora un gesto), il pulsante invita al clic.
+    const prova = () =>
+      audio.play().then(smetti, () => {
+        if (audio.paused && leggi(localStorage, SCELTA) !== "spento") pulsante.dataset.attesa = "";
+      });
     // Il primo gesto utile fa partire l'inno; il tocco sul pulsante no, perche'
     // lo gestisce il pulsante stesso (altrimenti partirebbe e si fermerebbe).
     function alPrimoGesto(e: Event) {
@@ -105,6 +133,7 @@
         prova();
       } else {
         scrivi(localStorage, SCELTA, "spento");
+        delete pulsante.dataset.attesa;
         smetti();
         audio.pause();
       }
