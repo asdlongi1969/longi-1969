@@ -10,6 +10,6 @@
     "binding": "ASSETS",
     // I link del sito sono senza barra finale (/social): serviti direttamente, senza redirect.
     "html_handling": "drop-trailing-slash",
-    "run_worker_first": ["/auth", "/callback"]
+    "run_worker_first": ["/auth", "/callback", "/api/*"]
   }
 }

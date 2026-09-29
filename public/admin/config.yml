@@ -260,7 +260,7 @@ collections:
       - name: "girone"
         label: "Il girone"
         file: "src/data/girone.json"
-        description: "Le squadre del girone mostrate sul tabellone in home. Si aggiorna a ogni nuova stagione."
+        description: "La classifica in home si aggiorna da sola da Tuttocampo (squadre, posizioni e punti). Questo elenco serve solo di riserva, se Tuttocampo non risponde: basta aggiornarlo a ogni nuova stagione."
         fields:
           - { label: "Titolo", name: "nome", widget: "string", hint: "Per esempio: Il girone C." }
           - { label: "Stagione", name: "stagione", widget: "string", hint: "Per esempio: 2026/27." }

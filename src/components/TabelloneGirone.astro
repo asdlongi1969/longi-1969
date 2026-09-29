@@ -1,41 +1,72 @@
 ---
-// Le dodici squadre del girone come tabellone a palette anni '70: quando
-// la sezione entra in vista, ogni lettera scorre l'alfabeto e si ferma su
-// quella giusta, una riga dopo l'altra. Voce "d'annata" del brand
-// (DESIGN.md), nessun parente sul sito gemello (che ha il nastro cinetico).
+// Classifica del girone come tabellone a palette anni '70: quando la sezione
+// entra in vista, ogni lettera scorre l'alfabeto e si ferma su quella giusta,
+// una riga dopo l'altra. Voce "d'annata" del brand (DESIGN.md).
+//
+// I dati sono quelli di Tuttocampo (src/lib/classifica.ts). Arrivano due
+// volte: alla pubblicazione del sito (cosi' la pagina nasce gia' con la
+// classifica, anche senza JS) e a ogni visita da /api/classifica, che il
+// Worker tiene in cache 10 minuti: i punti si aggiornano da soli dopo ogni
+// giornata, senza ripubblicare. Se Tuttocampo non risponde restano i nomi
+// dell'elenco di riserva (pannello, "Il girone"), senza posizioni ne' punti.
 // Senza JS o con reduced-motion i nomi sono scritti da subito.
 import girone from "../data/girone.json";
 import societa from "../data/societa.json";
+import { leggiClassifica, type RigaClassifica } from "../lib/classifica";
+import { WIDGET_URLS, TEAM_ID } from "../lib/tuttocampo";
 
-const noi = societa.denominazioneBreve;
+let classifica: RigaClassifica[] = [];
+try {
+  const r = await fetch(WIDGET_URLS.classifica!, { signal: AbortSignal.timeout(5000) });
+  if (r.ok) classifica = leggiClassifica(await r.text());
+} catch {
+  // Rete assente durante la compilazione: si parte dall'elenco di riserva.
+}
+
+const righe = classifica.length
+  ? classifica.map((s) => ({ ...s, noi: s.id === TEAM_ID }))
+  : girone.squadre.map((nome) => ({ nome, noi: nome === societa.denominazioneBreve, pos: undefined, pt: undefined, g: undefined }));
+
 const pad = (n: number) => String(n).padStart(2, "0");
 ---
 <section class="girone" aria-labelledby="girone-title">
   <div class="inner">
-    <p class="kicker">Stagione {girone.stagione}</p>
+    <p class="kicker">Classifica {girone.stagione}</p>
     <h2 id="girone-title" class="font-display">{girone.nome}</h2>
 
-    <ol class="tabellone" data-tabellone>
-      {girone.squadre.map((squadra, i) => (
-        <li class:list={["riga", { noi: squadra === noi }]}>
-          <span class="pos font-display" aria-hidden="true">{pad(i + 1)}</span>
+    <ol class="tabellone" data-tabellone data-noi={TEAM_ID} style={`--righe:${Math.ceil(righe.length / 2)}`}>
+      {righe.map((s) => (
+        <li class:list={["riga", { noi: s.noi }]}>
+          <span class="pos font-display" aria-hidden="true">{s.pos ? pad(s.pos) : ""}</span>
           <span class="nome">
-            <span class="sr-only">{squadra}</span>
+            <span class="sr-only">
+              {s.pos ? `${s.pos}°, ${s.nome}, ${s.pt} punti in ${s.g} partite` : s.nome}
+            </span>
             <span class="lettere font-display" aria-hidden="true">
-              {[...squadra.toUpperCase()].map((c) => (
+              {[...s.nome.toUpperCase()].map((c) => (
                 <span class="palletta" data-target={c}>{c}</span>
               ))}
             </span>
           </span>
+          {s.pt !== undefined && (
+            <span class="punti lettere font-display" aria-hidden="true">
+              {[...String(s.pt).padStart(2, " ")].map((c) => (
+                <span class="palletta" data-target={c}>{c}</span>
+              ))}
+            </span>
+          )}
         </li>
       ))}
     </ol>
 
-    <p class="rimando"><a href="/stagione">Classifica e risultati</a></p>
+    <p class="fonte" data-fonte>{classifica.length > 0 && "Punti in classifica · dati Tuttocampo"}</p>
+    <p class="rimando"><a href="/stagione">Risultati e marcatori</a></p>
   </div>
 </section>
 
 <style>
+  /* Selettori sotto .girone e :global: le righe aggiornate a ogni visita sono
+     create dallo script, fuori dallo scope che Astro assegna al markup. */
   .girone {
     padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 4vw, 2.5rem);
   }
@@ -59,38 +90,56 @@ const pad = (n: number) => String(n).padStart(2, "0");
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: 1fr;
+    /* minmax(0, ...): un nome lungo non deve allargare la colonna oltre lo
+       schermo (su telefono spingeva fuori i punti). */
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.4rem 2.5rem;
   }
+  /* Due colonne lette dall'alto in basso: 1-7 a sinistra, 8-13 a destra,
+     come si legge una classifica. */
   @media (min-width: 720px) {
     .tabellone {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: repeat(var(--righe), auto);
+      grid-auto-flow: column;
     }
   }
-  .riga {
+  .girone :global(.riga) {
     display: flex;
     align-items: center;
     gap: 0.75rem;
     padding: 0.25rem 0;
     border-bottom: 1px solid color-mix(in oklch, var(--oro) 18%, transparent);
   }
-  .pos {
+  .girone :global(.pos) {
     color: var(--oro);
     font-size: 0.95rem;
     min-width: 2ch;
     font-variant-numeric: tabular-nums;
   }
-  .lettere {
+  .girone :global(.nome) {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .girone :global(.lettere) {
     display: inline-flex;
     gap: 2px;
     white-space: nowrap;
-    font-size: clamp(1rem, 2.6vw, 1.45rem);
+    font-size: clamp(0.7rem, 2.6vw, 1.45rem);
     line-height: 1.4;
+  }
+  .girone :global(.punti) {
+    flex-shrink: 0;
+    font-size: clamp(0.95rem, 3vw, 1.45rem);
+  }
+  .girone :global(.punti .palletta) {
+    color: var(--oro);
   }
   /* Ogni palletta e' una targhetta scura con la cerniera orizzontale al
      centro, come le palette vere. Larghezza fissa: le lettere che scorrono
      non devono far ballare la riga. */
-  .palletta {
+  .girone :global(.palletta) {
     display: inline-block;
     min-width: 0.78em;
     text-align: center;
@@ -103,7 +152,8 @@ const pad = (n: number) => String(n).padStart(2, "0");
       var(--surface) 52% 100%
     );
   }
-  .riga.noi .palletta {
+  .girone :global(.riga.noi .palletta),
+  .girone :global(.riga.noi .punti .palletta) {
     color: var(--bg);
     background: linear-gradient(
       to bottom,
@@ -112,10 +162,10 @@ const pad = (n: number) => String(n).padStart(2, "0");
       var(--oro) 52% 100%
     );
   }
-  .riga.noi .pos {
+  .girone :global(.riga.noi .pos) {
     color: var(--text);
   }
-  .sr-only {
+  .girone :global(.sr-only) {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -123,8 +173,16 @@ const pad = (n: number) => String(n).padStart(2, "0");
     clip-path: inset(50%);
     white-space: nowrap;
   }
+  .fonte {
+    margin: 1rem 0 0;
+    font-size: 0.8rem;
+    color: color-mix(in oklch, var(--text) 62%, transparent);
+  }
+  .fonte:empty {
+    display: none;
+  }
   .rimando {
-    margin: 1.5rem 0 0;
+    margin: 0.75rem 0 0;
   }
   .rimando a {
     color: var(--oro);
@@ -138,16 +196,18 @@ const pad = (n: number) => String(n).padStart(2, "0");
 
 <script>
   import { sequenza } from "../lib/palette";
+  import type { RigaClassifica } from "../lib/classifica";
 
-  const tabellone = document.querySelector<HTMLElement>("[data-tabellone]");
-  if (tabellone && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    const righe = [...tabellone.querySelectorAll<HTMLElement>(".riga")];
+  const tabellone = document.querySelector<HTMLOListElement>("[data-tabellone]");
+  if (tabellone) {
+    const animare = !matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // Lo spazio si scrive come spazio unificatore: una inline-block con un
+    // solo spazio normale collasserebbe.
+    const mostra = (el: HTMLElement, c: string) => { el.textContent = c === " " ? " " : c; };
 
     // Una riga alla volta: un solo timer per riga fa scorrere tutte le sue
     // pallette insieme; ognuna si ferma quando arriva alla sua lettera.
-    // Lo spazio si scrive come spazio unificatore: una inline-block con un
-    // solo spazio normale collasserebbe.
-    const mostra = (el: HTMLElement, c: string) => { el.textContent = c === " " ? " " : c; };
     const gira = (riga: HTMLElement) => {
       const pallette = [...riga.querySelectorAll<HTMLElement>(".palletta")].map((el) => ({
         el,
@@ -166,19 +226,80 @@ const pad = (n: number) => String(n).padStart(2, "0");
         k++;
       }, 45);
     };
+    const anima = () =>
+      tabellone.querySelectorAll<HTMLElement>(".riga").forEach((riga, i) => setTimeout(() => gira(riga), i * 120));
 
     // Pallette in bianco SOLO a script attivo: senza JS i nomi restano
     // leggibili da subito (stesso principio del coro in storia.astro).
-    for (const p of tabellone.querySelectorAll<HTMLElement>(".palletta")) mostra(p, " ");
+    const svuota = () => {
+      if (animare) for (const p of tabellone.querySelectorAll<HTMLElement>(".palletta")) mostra(p, " ");
+    };
+    svuota();
 
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (!e.isIntersecting) return;
-        io.disconnect();
-        righe.forEach((riga, i) => setTimeout(() => gira(riga), i * 120));
-      },
-      { threshold: 0.25 }
-    );
-    io.observe(tabellone);
+    let visto = false;
+    if (animare) {
+      const io = new IntersectionObserver(
+        ([e]) => {
+          if (!e.isIntersecting) return;
+          io.disconnect();
+          visto = true;
+          anima();
+        },
+        { threshold: 0.25 }
+      );
+      io.observe(tabellone);
+    }
+
+    // Stessa struttura delle righe scritte da Astro (sopra): posizione,
+    // nome in pallette, punti in pallette.
+    const pallette = (testo: string) => {
+      const box = document.createElement("span");
+      box.className = "lettere font-display";
+      box.setAttribute("aria-hidden", "true");
+      for (const c of testo) {
+        const p = document.createElement("span");
+        p.className = "palletta";
+        p.dataset.target = c;
+        p.textContent = c;
+        box.append(p);
+      }
+      return box;
+    };
+    const creaRiga = (s: RigaClassifica) => {
+      const li = document.createElement("li");
+      li.className = s.id === tabellone.dataset.noi ? "riga noi" : "riga";
+      const pos = document.createElement("span");
+      pos.className = "pos font-display";
+      pos.setAttribute("aria-hidden", "true");
+      pos.textContent = String(s.pos).padStart(2, "0");
+      const nome = document.createElement("span");
+      nome.className = "nome";
+      const sr = document.createElement("span");
+      sr.className = "sr-only";
+      sr.textContent = `${s.pos}°, ${s.nome}, ${s.pt} punti in ${s.g} partite`;
+      nome.append(sr, pallette(s.nome.toUpperCase()));
+      const punti = pallette(String(s.pt).padStart(2, " "));
+      punti.classList.add("punti");
+      li.append(pos, nome, punti);
+      return li;
+    };
+
+    // Aggiornamento a ogni visita: punti e posizioni di adesso, non di quando
+    // il sito e' stato pubblicato. Se la richiesta fallisce resta quello che c'e'.
+    fetch("/api/classifica")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((dati: { aggiornata: string; squadre: RigaClassifica[] } | null) => {
+        if (!dati?.squadre?.length) return;
+        tabellone.replaceChildren(...dati.squadre.map(creaRiga));
+        tabellone.style.setProperty("--righe", String(Math.ceil(dati.squadre.length / 2)));
+        const fonte = document.querySelector<HTMLElement>("[data-fonte]");
+        if (fonte) {
+          const ora = new Date(dati.aggiornata).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+          fonte.textContent = `Punti in classifica · dati Tuttocampo, aggiornati alle ${ora}`;
+        }
+        svuota();
+        if (visto) anima();
+      })
+      .catch(() => {});
   }
 </script>
