@@ -1,4 +1,4 @@
 ---
-nome: Sirna
+nome: Diego Pidalà
 ruolo: Centrocampista
 ---

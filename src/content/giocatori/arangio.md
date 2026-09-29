@@ -1,4 +1,0 @@
----
-nome: Arangio
-ruolo: Portiere
----
