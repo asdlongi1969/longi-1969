@@ -55,6 +55,7 @@ import societa from "../data/societa.json";
             <p>Campo comunale di Longi (nome da confermare)</p>
           )}
           {societa.codiceFiscale && <p>Codice fiscale {societa.codiceFiscale}</p>}
+          {societa.partitaIva && <p>P.IVA {societa.partitaIva}</p>}
           {societa.telefono && <p>Tel. {societa.telefono}</p>}
           {societa.email && <p><a href={`mailto:${societa.email}`}>{societa.email}</a></p>}
           {societa.pec && <p>PEC: {societa.pec}</p>}

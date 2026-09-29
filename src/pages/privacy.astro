@@ -7,7 +7,7 @@ import societa from "../data/societa.json";
 // denominazione breve come segnaposto e resta l'avviso sotto.
 const denominazioneVisualizzata = societa.denominazione || societa.denominazioneBreve;
 const datiCompleti = Boolean(
-  societa.denominazione && societa.indirizzo && societa.codiceFiscale && societa.email && societa.pec
+  societa.denominazione && societa.indirizzo && (societa.codiceFiscale || societa.partitaIva) && societa.email && societa.pec
 );
 ---
 <Base title="Privacy" description="Informativa privacy e cookie del sito Longi 1969">
@@ -27,7 +27,8 @@ const datiCompleti = Boolean(
           Il titolare del trattamento dei dati raccolti tramite questo sito è
           {" "}<strong>{denominazioneVisualizzata}</strong>, con sede in
           {" "}{societa.indirizzo || societa.comune}
-          {societa.codiceFiscale && <>, codice fiscale <strong>{societa.codiceFiscale}</strong></>}.
+          {societa.codiceFiscale && <>, codice fiscale <strong>{societa.codiceFiscale}</strong></>}
+          {societa.partitaIva && <>, partita IVA <strong>{societa.partitaIva}</strong></>}.
           {societa.email && <> Email: {societa.email}.</>}
           {societa.pec && <> PEC: {societa.pec}.</>}
         </p>

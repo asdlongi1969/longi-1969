@@ -22,8 +22,9 @@ const year = new Date().getFullYear();
     </div>
     <div class="footer-legal">
       <p class="footer-heading">Dati societari</p>
-      <p>{societa.denominazioneBreve} &middot; {societa.indirizzo || societa.comune}</p>
+      <p>{societa.denominazione || societa.denominazioneBreve} &middot; {societa.indirizzo || societa.comune}</p>
       {societa.codiceFiscale && <p>C.F. {societa.codiceFiscale}{societa.matricolaFigc && ` · matricola FIGC ${societa.matricolaFigc}`}</p>}
+      {societa.partitaIva && <p>P.IVA {societa.partitaIva}</p>}
       {societa.email && <p><a href={`mailto:${societa.email}`}>{societa.email}</a></p>}
       <p><a href="/privacy">Privacy</a></p>
     </div>

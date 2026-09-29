@@ -24,6 +24,8 @@ const staff = defineCollection({
   schema: z.object({
     nome: z.string(),
     incarico: z.string(),
+    // Dove compare: "Società" nella pagina Club, "Staff tecnico" nella pagina Squadra.
+    sezione: empty(z.enum(["Società", "Staff tecnico"]).default("Staff tecnico")),
     foto: empty(z.string().optional()),
     ordine: empty(z.number().int().default(99)),
   }),
