@@ -14,3 +14,6 @@ dist/
 .DS_Store
 Thumbs.db
 .superpowers/
+
+# Cache locale di wrangler (Cloudflare)
+.wrangler/

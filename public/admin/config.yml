@@ -9,12 +9,11 @@ backend:
   name: github
   repo: asdlongi1969/longi-1969
   branch: main
-  # L'accesso passa da due funzioni ospitate sul sito stesso (netlify/functions):
-  # servono perche' lo scambio finale con GitHub richiede un segreto che non puo'
-  # stare in una pagina web. Nessun servizio esterno, nessun account in piu'.
-  # ALLA MESSA ONLINE: qui va il dominio definitivo, insieme a quello in
-  # astro.config.mjs e all'indirizzo di callback nell'applicazione GitHub.
-  base_url: https://fclongi.netlify.app
+  # L'accesso passa da /auth e /callback sul sito stesso (worker/index.mjs su
+  # Cloudflare): servono perche' lo scambio finale con GitHub richiede un segreto
+  # che non puo' stare in una pagina web. Nessun servizio esterno in piu'.
+  # Il callback dell'applicazione OAuth su GitHub deve essere lo stesso dominio.
+  base_url: https://asdlongi.it
 
 # Backend locale per le prove in sviluppo: decommentare e lanciare
 # `npx @sveltia/cms-proxy-server` per scrivere sul disco senza passare da

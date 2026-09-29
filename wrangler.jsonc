@@ -1,0 +1,15 @@
+// Cloudflare Workers (build automatica da GitHub a ogni salvataggio dal pannello).
+// "name" deve coincidere con il nome del Worker nella dashboard Cloudflare.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "longi-1969",
+  "main": "worker/index.mjs",
+  "compatibility_date": "2026-09-29",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    // I link del sito sono senza barra finale (/social): serviti direttamente, senza redirect.
+    "html_handling": "drop-trailing-slash",
+    "run_worker_first": ["/auth", "/callback"]
+  }
+}

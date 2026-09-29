@@ -1,9 +1,12 @@
 # Giorno del dominio: trasloco su Cloudflare Pages
 
-Il codice è già pronto: accesso al pannello in `functions/` (logica in
-`oauth/`, la stessa usata oggi da Netlify), header e redirect in
-`public/_headers` e `public/_redirects`, versione di Node in `.node-version`.
-Restano questi passi.
+**Aggiornamento 29/09/2026: il sito è un Cloudflare _Worker_ (non Pages).**
+Il progetto creato dalla dashboard è un Worker con build automatica da GitHub:
+configurazione in `wrangler.jsonc` (file statici da `dist/`, `_headers` e
+`_redirects` compresi), accesso al pannello in `worker/index.mjs` (logica in
+`oauth/`, la stessa usata da Netlify). I segreti `GITHUB_CLIENT_ID` e
+`GITHUB_CLIENT_SECRET` vanno impostati come secret del Worker. Dove sotto si
+legge "Pages", vale lo stesso per il Worker.
 
 Perché si trasloca: sul piano gratuito Netlify i 300 crediti al mese sono
 condivisi da tutti i siti dell'account e ogni aggiornamento costa 15 crediti;
