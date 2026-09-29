@@ -11,13 +11,18 @@ import Debutto from "../components/Debutto.astro";
 import Rinascita from "../components/Rinascita.astro";
 import TabelloneGirone from "../components/TabelloneGirone.astro";
 import MuroRosa from "../components/MuroRosa.astro";
+import Formazione from "../components/Formazione.astro";
 import PlayerDialog from "../components/PlayerDialog.astro";
 import { ordinaRosa } from "../lib/rosa";
+import { componiFormazione } from "../lib/formazione";
+import datiFormazione from "../data/formazione.json";
 
 const social = (await getCollection("social"))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 3);
 const rosa = ordinaRosa(await getCollection("giocatori"));
+// Formazione dal pannello; se non e' completa (11 giocatori diversi) torna il muro della rosa.
+const formazione = componiFormazione(datiFormazione, rosa.map((g) => g.data));
 ---
 {/* Ordine diverso dal sito gemello: dopo l'hero vengono SUBITO le partite
     (quello che il tifoso cerca la domenica), poi i post social a mosaico. */}
@@ -51,7 +56,9 @@ const rosa = ordinaRosa(await getCollection("giocatori"));
 
     <TabelloneGirone />
 
-    {rosa.length > 0 && (
+    {formazione ? (
+      <Formazione formazione={formazione} />
+    ) : rosa.length > 0 && (
       <section class="rosa-home" aria-labelledby="rosa-title">
         <div class="section-inner">
           <h2 id="rosa-title" class="font-display">La rosa</h2>

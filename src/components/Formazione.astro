@@ -1,0 +1,211 @@
+---
+// Formazione titolare "alla Fantagazzetta": mezzo campo visto dall'alto,
+// portiere in basso e attacco verso la meta' campo. Ogni maglia apre la
+// scheda del giocatore (PlayerDialog), come le card della rosa.
+import type { Formazione } from "../lib/formazione";
+
+interface Props {
+  formazione: Formazione;
+}
+const { formazione } = Astro.props;
+const { titolo, modulo, linee } = formazione;
+
+// Altezza di ogni linea in % del campo: portiere fisso in basso, i reparti
+// distribuiti fra la difesa (70%) e l'attacco (12%).
+const reparti = linee.length - 1;
+const altezza = (i: number) =>
+  i === 0 ? 88 : reparti === 1 ? 40 : 70 - ((i - 1) * 58) / (reparti - 1);
+---
+<section class="formazione-home" aria-labelledby="formazione-title">
+  <div class="testata">
+    <h2 id="formazione-title" class="font-display">{titolo}</h2>
+    <p class="modulo font-display">{modulo}</p>
+  </div>
+
+  <div class="campo">
+    <svg class="linee-campo" viewBox="0 0 68 64" aria-hidden="true" focusable="false">
+      <rect x="1" y="1" width="66" height="62" />
+      <path d="M24.85 1 A9.15 9.15 0 0 0 43.15 1" />
+      <circle cx="34" cy="1" r="0.5" class="punto" />
+      <rect x="13.85" y="46.5" width="40.3" height="16.5" />
+      <rect x="24.85" y="57.5" width="18.3" height="5.5" />
+      <circle cx="34" cy="52" r="0.5" class="punto" />
+      <path d="M26.69 46.5 A9.15 9.15 0 0 1 41.31 46.5" />
+    </svg>
+
+    {linee.map((linea, i) => (
+      <ul class="linea" style={`--y:${altezza(i)}%`} aria-label={i === 0 ? "Portiere" : undefined}>
+        {linea.map((m) => (
+          <li>
+            <button
+              type="button"
+              class:list={["giocatore", { portiere: i === 0 }]}
+              data-player
+              data-nome={m.nome}
+              data-ruolo={m.ruolo ?? (i === 0 ? "Portiere" : "")}
+              data-numero={m.numero ?? ""}
+              data-foto={m.foto ?? ""}
+              aria-label={`Apri la scheda di ${m.nome}`}
+            >
+              <svg class="maglia" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
+                <path
+                  class="stoffa"
+                  d="M13 3 L8 5 L1 12 L6 18 L9 15.5 V37 H31 V15.5 L34 18 L39 12 L32 5 L27 3 Q20 8 13 3 Z"
+                />
+                <path class="meta-dx" d="M20 5.6 Q24 5.2 27 3 L32 5 L39 12 L34 18 L31 15.5 V37 H20 Z" />
+                <path
+                  class="bordo"
+                  d="M13 3 L8 5 L1 12 L6 18 L9 15.5 V37 H31 V15.5 L34 18 L39 12 L32 5 L27 3 Q20 8 13 3 Z"
+                />
+                {m.numero !== undefined && (
+                  <text x="20" y="27" text-anchor="middle">{m.numero}</text>
+                )}
+              </svg>
+              <span class="etichetta">{m.etichetta}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    ))}
+  </div>
+
+  <p class="rimando"><a href="/squadra">Tutta la rosa e lo staff</a></p>
+</section>
+
+<style>
+  .formazione-home {
+    padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 4vw, 2.5rem) clamp(2rem, 6vw, 4rem);
+  }
+  .testata {
+    max-width: 620px;
+    margin: 0 auto 1.25rem;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .testata h2 {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    margin: 0;
+  }
+  .modulo {
+    margin: 0;
+    color: var(--oro);
+    font-size: clamp(1.25rem, 3vw, 1.75rem);
+    letter-spacing: 0.04em;
+  }
+
+  /* Prato a strisce: verde scuro e desaturato, per stare accanto al blu notte
+     del sito senza sembrare un adesivo. */
+  .campo {
+    position: relative;
+    max-width: 620px;
+    margin: 0 auto;
+    aspect-ratio: 68 / 64;
+    background: repeating-linear-gradient(
+      to bottom,
+      oklch(0.46 0.1 150) 0 10%,
+      oklch(0.42 0.095 150) 10% 20%
+    );
+    border: 2px solid oklch(0.36 0.08 150);
+    box-shadow: 0 1.25rem 3rem -1.5rem oklch(0 0 0 / 0.7);
+    overflow: hidden;
+  }
+  .linee-campo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: oklch(0.97 0.01 150 / 0.75);
+    stroke-width: 0.35;
+  }
+  .linee-campo .punto {
+    fill: oklch(0.97 0.01 150 / 0.75);
+    stroke: none;
+  }
+
+  .linea {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: var(--y);
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-evenly;
+    list-style: none;
+    margin: 0;
+    padding: 0 2%;
+  }
+  .linea li {
+    flex: 0 1 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  .giocatore {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    font: inherit;
+  }
+  .maglia {
+    width: clamp(2.1rem, 8vw, 3.4rem);
+    height: auto;
+    filter: drop-shadow(0 0.15rem 0.2rem oklch(0 0 0 / 0.45));
+    transition: transform 0.2s var(--ease-out-quart);
+  }
+  /* Maglia dimezzata come lo scudo: rosso a sinistra, blu a destra. */
+  .maglia .stoffa { fill: var(--rosso); }
+  .maglia .meta-dx { fill: var(--blu); }
+  .maglia .bordo { fill: none; stroke: var(--oro); stroke-width: 1.2; stroke-linejoin: round; }
+  .portiere .maglia .stoffa,
+  .portiere .maglia .meta-dx { fill: var(--oro); }
+  .portiere .maglia .bordo { stroke: var(--bg); }
+  .maglia text {
+    font-family: var(--font-display);
+    font-size: 12px;
+    fill: var(--text);
+    paint-order: stroke;
+    stroke: oklch(0 0 0 / 0.35);
+    stroke-width: 1.5px;
+  }
+  .portiere .maglia text { fill: var(--bg); stroke: none; }
+
+  .etichetta {
+    font-family: var(--font-display);
+    font-size: clamp(0.58rem, 2.2vw, 0.8rem);
+    text-transform: uppercase;
+    line-height: 1.1;
+    white-space: nowrap;
+    padding: 0.15rem 0.4rem;
+    background: oklch(0.2 0.04 262 / 0.82);
+    border-bottom: 2px solid var(--oro);
+  }
+  .giocatore:hover .maglia,
+  .giocatore:focus-visible .maglia {
+    transform: translateY(-3px) scale(1.06);
+  }
+  .giocatore:focus-visible {
+    outline: 2px solid var(--oro);
+    outline-offset: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .maglia { transition: none; }
+  }
+
+  .rimando {
+    max-width: 620px;
+    margin: 1.5rem auto 0;
+  }
+  .rimando a {
+    color: var(--oro);
+  }
+</style>
