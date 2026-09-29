@@ -1,7 +1,8 @@
 // Cloudflare Workers: il sito sono i file statici di dist/ (serviti da
-// Cloudflare, con _headers e _redirects). Il Worker entra in gioco solo per
-// /auth e /callback, l'accesso al pannello, e per /api/classifica (vedi
-// run_worker_first in wrangler.jsonc). La logica OAuth e' quella di oauth/.
+// Cloudflare, con _headers e _redirects). Il Worker passa prima di tutto per
+// le pagine (redirect da http a https), per /auth e /callback (accesso al
+// pannello) e per /api/classifica; immagini, script e audio vanno dritti
+// (vedi run_worker_first in wrangler.jsonc). La logica OAuth e' in oauth/.
 import { avvia } from "../oauth/auth.mjs";
 import { completa } from "../oauth/callback.mjs";
 import { leggiClassifica } from "../src/lib/classifica.ts";
@@ -39,7 +40,13 @@ async function classifica(request, ctx) {
 
 export default {
   fetch(request, env, ctx) {
-    const { pathname } = new URL(request.url);
+    const url = new URL(request.url);
+    // Chi arriva in http:// passa a https:// (in locale no: li' c'e' solo http).
+    if (url.protocol === "http:" && url.hostname !== "localhost" && url.hostname !== "127.0.0.1") {
+      url.protocol = "https:";
+      return Response.redirect(url.href, 301);
+    }
+    const { pathname } = url;
     if (request.method === "GET" && pathname === "/auth") return avvia(request, env);
     if (request.method === "GET" && pathname === "/callback") return completa(request, env);
     if (request.method === "GET" && pathname === "/api/classifica") return classifica(request, ctx);

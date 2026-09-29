@@ -13,6 +13,8 @@
     "binding": "ASSETS",
     // I link del sito sono senza barra finale (/social): serviti direttamente, senza redirect.
     "html_handling": "drop-trailing-slash",
-    "run_worker_first": ["/auth", "/callback", "/api/*"]
+    // Pagine attraverso il Worker (redirect http -> https, pannello, classifica);
+    // i file pesanti no, cosi' non consumano richieste del piano gratuito.
+    "run_worker_first": ["/*", "!/_astro/*", "!/img/*", "!/hero-frames/*", "!/audio/*"]
   }
 }
