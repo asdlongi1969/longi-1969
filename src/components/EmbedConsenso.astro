@@ -19,7 +19,7 @@ interface Props {
 const { src, title, servizio, altezza = "100%", nota, apri, scorre = true } = Astro.props;
 const id = `embed-${Math.random().toString(36).slice(2, 9)}`;
 ---
-<div class="embed" data-embed data-servizio={servizio} style={`--embed-h:${altezza}`}>
+<div class="embed" data-embed data-servizio={servizio} data-fisso={scorre ? undefined : ""} style={`--embed-h:${altezza}`}>
   <!-- Il contenuto vero sta in un <template>: inerte finche' non si accetta. -->
   <template data-embed-template>
     <iframe src={src} title={title} loading="lazy" scrolling={scorre ? undefined : "no"}></iframe>
@@ -55,6 +55,14 @@ const id = `embed-${Math.random().toString(36).slice(2, 9)}`;
     position: relative;
     min-height: var(--embed-h, 100%);
     height: var(--embed-h, 100%);
+  }
+  /* Su telefono un riquadro che non deve scorrere non deve nemmeno prendersi
+     il dito: senza questo il trascinamento finiva nell'iframe invece di far
+     scorrere la pagina (segnalato sul riquadro Prossima partita). */
+  @media (hover: none) {
+    .embed[data-fisso] :global(iframe) {
+      pointer-events: none;
+    }
   }
   .embed :global(iframe) {
     width: 100%;
