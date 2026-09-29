@@ -67,7 +67,7 @@ const datiCompleti = Boolean(
 
         <h3>Dati di navigazione</h3>
         <p>
-          Il fornitore dell'hosting registra automaticamente gli accessi tecnici
+          Il fornitore dell'hosting (Cloudflare, vedi sotto) registra automaticamente gli accessi tecnici
           (indirizzo IP, data e ora, pagina richiesta, tipo di browser) per garantire
           sicurezza e funzionamento del servizio. Non vengono usati per profilare
           nessuno né incrociati con altri dati.
@@ -95,12 +95,23 @@ const datiCompleti = Boolean(
         </p>
         <ul>
           <li>
-            <strong>Netlify</strong>, per l'hosting del sito e la gestione del modulo
-            di contatto. È una società statunitense: il trasferimento di dati fuori
-            dall'Unione Europea avviene sulla base delle clausole contrattuali tipo
-            approvate dalla Commissione Europea.
+            <strong>Cloudflare, Inc.</strong>, per l'hosting del sito e la sua
+            distribuzione in rete: tratta i dati di navigazione per far funzionare e
+            proteggere il sito.
+          </li>
+          <li>
+            <strong>GitHub, Inc.</strong>, che conserva i contenuti del sito (testi e
+            fotografie pubblicate) e gestisce l'accesso al pannello con cui i
+            collaboratori della società li aggiornano.
           </li>
         </ul>
+        <p>
+          Entrambe sono società statunitensi: il trasferimento di dati fuori
+          dall'Unione Europea avviene sulla base della decisione di adeguatezza della
+          Commissione Europea del 10 luglio 2023 (EU-U.S. Data Privacy Framework), a cui
+          entrambe aderiscono, e delle clausole contrattuali tipo contenute nei loro
+          accordi sul trattamento dei dati.
+        </p>
         <p>
           I dati possono inoltre essere comunicati alle autorità pubbliche quando la
           legge lo impone.
@@ -116,11 +127,28 @@ const datiCompleti = Boolean(
           strumenti di statistica e non traccia i visitatori.
         </p>
         <p>
-          L'unico dato salvato nel browser è la scelta espressa sulla barra in basso,
-          conservata nella memoria locale del dispositivo con il nome
-          <code>consenso-terze-parti</code>. Non è un cookie, non viene inviato a
-          nessun server e resta finché non si cancellano i dati del browser.
+          Nel browser il sito salva solo tre informazioni tecniche, nella memoria del
+          dispositivo: non sono cookie, non vengono inviate a nessun server e servono
+          soltanto a ricordare le scelte fatte dal visitatore. Per questo non
+          richiedono consenso (articolo 122 del Codice in materia di protezione dei
+          dati personali e Linee guida del Garante sui cookie del 10 giugno 2021):
         </p>
+        <ul>
+          <li>
+            <code>consenso-terze-parti</code>: la scelta espressa sulla barra in basso
+            sui contenuti di altri siti. Resta finché non si cancellano i dati del sito
+            dal browser.
+          </li>
+          <li>
+            <code>inno-scelta</code>: se l'inno del Longi è stato fermato, così non
+            riparte da solo alle visite successive. Resta finché non si cancellano i
+            dati del sito dal browser.
+          </li>
+          <li>
+            <code>inno-punto</code>: il punto dell'inno a cui si era arrivati, per
+            riprenderlo cambiando pagina. Si cancella da solo alla chiusura della scheda.
+          </li>
+        </ul>
 
         <h3>Contenuti serviti da altri siti</h3>
         <p>
@@ -159,6 +187,19 @@ const datiCompleti = Boolean(
           La scelta si può cambiare in ogni momento cancellando i dati del sito dal
           proprio browser: alla visita successiva la barra ricompare.
         </p>
+
+        <h3>Inno e collegamenti ad altri siti</h3>
+        <p>
+          L'inno che si può ascoltare sul sito è un file ospitato qui: ascoltarlo non
+          comporta nessun collegamento a servizi esterni.
+        </p>
+        <p>
+          Il pulsante <strong>Ascoltalo su Spotify</strong>, che compare mentre suona
+          l'inno, e i collegamenti ai profili social della società sono semplici link:
+          finché non li si apre nessun dato viene inviato a quei servizi. Aprendoli si
+          passa sul sito o sull'app del fornitore (per Spotify, Spotify AB), che tratta
+          i dati secondo la propria informativa.
+        </p>
       </div>
     </section>
 
@@ -193,7 +234,7 @@ const datiCompleti = Boolean(
           L'informativa può essere aggiornata quando cambiano i servizi utilizzati dal
           sito. La versione pubblicata in questa pagina è sempre quella in vigore.
         </p>
-        <p class="aggiornamento">Ultimo aggiornamento: 27 agosto 2026.</p>
+        <p class="aggiornamento">Ultimo aggiornamento: 29 settembre 2026.</p>
       </div>
     </section>
   </main>
