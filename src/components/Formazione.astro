@@ -96,7 +96,7 @@ const ruolo = (m: Maglia, portiere: boolean) => m.ruolo ?? (portiere ? "Portiere
   .campo,
   .panchina,
   .rimando {
-    max-width: 480px;
+    max-width: 400px;
     margin-inline: auto;
   }
   .testata {
@@ -152,7 +152,7 @@ const ruolo = (m: Maglia, portiere: boolean) => m.ruolo ?? (portiere ? "Portiere
     justify-content: space-evenly;
     list-style: none;
     margin: 0;
-    padding: 0 1%;
+    padding: 0 6%;
   }
   .linea li {
     flex: 0 1 0;
@@ -175,14 +175,14 @@ const ruolo = (m: Maglia, portiere: boolean) => m.ruolo ?? (portiere ? "Portiere
   .etichetta {
     font-family: var(--font-body);
     font-weight: 700;
-    font-size: clamp(0.75rem, 3.3vw, 1rem);
+    font-size: clamp(0.7rem, 3vw, 0.9rem);
     line-height: 1.1;
     white-space: nowrap;
     color: #fff;
     text-shadow: 0 1px 2px oklch(0 0 0 / 0.55), 0 0 6px oklch(0 0 0 / 0.35);
   }
   .giocatore :global(.avatar) {
-    --avatar: clamp(3rem, 14vw, 4.25rem);
+    --avatar: clamp(2.6rem, 12vw, 3.5rem);
   }
   .giocatore:hover :global(.avatar),
   .giocatore:focus-visible :global(.avatar) {
@@ -225,7 +225,7 @@ const ruolo = (m: Maglia, portiere: boolean) => m.ruolo ?? (portiere ? "Portiere
     justify-content: center;
   }
   .panchina .giocatore :global(.avatar) {
-    --avatar: 3.25rem;
+    --avatar: 2.75rem;
   }
   .panchina .etichetta {
     font-size: 0.8rem;

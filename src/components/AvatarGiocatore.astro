@@ -1,7 +1,9 @@
 ---
-// Faccia del giocatore nella formazione: foto tonda, oppure (finche' la foto
-// non c'e') la maglia rossoblu' dimezzata come lo scudo. Il portiere ha il
-// bordo oro e la maglia gialla. Numero di maglia in alto a sinistra.
+// Faccia del giocatore nella formazione: card sagomata come quelle di FIFA
+// (angoli smussati in alto, punta in basso) con i colori del club, bordo
+// rossoblu', dentro la foto oppure (finche' la foto non c'e') la maglia
+// rossoblu' dimezzata come lo scudo. Il portiere ha il bordo oro e la maglia
+// gialla. Numero di maglia in alto a sinistra.
 import type { Maglia } from "../lib/formazione";
 
 interface Props {
@@ -11,6 +13,7 @@ interface Props {
 const { maglia, portiere = false } = Astro.props;
 ---
 <span class:list={["avatar", { portiere }]}>
+  <span class="carta">
   {maglia.foto ? (
     <img src={maglia.foto} alt="" loading="lazy" />
   ) : (
@@ -20,38 +23,48 @@ const { maglia, portiere = false } = Astro.props;
       <path class="bordo" d="M13 3 L8 5 L1 12 L6 18 L9 15.5 V37 H31 V15.5 L34 18 L39 12 L32 5 L27 3 Q20 8 13 3 Z" />
     </svg>
   )}
+  </span>
   {maglia.numero !== undefined && <span class="numero">{maglia.numero}</span>}
 </span>
 <style>
-  /* Larghezza e altezza esplicite: con il solo aspect-ratio la foto verticale
-     allungava il riquadro e il cerchio diventava un ovale. */
+  /* Larghezza e altezza esplicite: la card resta delle stesse proporzioni
+     qualunque sia la foto. Il clip-path taglia anche le ombre, quindi l'ombra
+     sta sul contenitore come drop-shadow. */
   .avatar {
+    --forma: polygon(18% 0, 82% 0, 100% 10%, 100% 84%, 50% 100%, 0 84%, 0 10%);
     position: relative;
     display: block;
     width: var(--avatar, 3.5rem);
-    height: var(--avatar, 3.5rem);
+    height: calc(var(--avatar, 3.5rem) * 1.25);
     flex-shrink: 0;
+    filter: drop-shadow(0 0.3rem 0.35rem oklch(0 0 0 / 0.4));
     transition: transform 0.2s var(--ease-out-quart);
   }
-  .avatar img {
+  .carta {
     display: block;
     width: 100%;
     height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-    object-position: 50% 15%;
-    border: 2px solid oklch(1 0 0 / 0.9);
-    background: var(--surface);
-    box-shadow: 0 0.3rem 0.6rem oklch(0 0 0 / 0.35);
+    padding: 2px;
+    clip-path: var(--forma);
+    background: linear-gradient(160deg, var(--rosso) 0 50%, var(--blu) 50% 100%);
   }
-  .portiere img {
-    border-color: var(--oro);
+  .portiere .carta {
+    background: var(--oro);
   }
+  .avatar img,
   .maglia {
     display: block;
     width: 100%;
     height: 100%;
-    filter: drop-shadow(0 0.2rem 0.3rem oklch(0 0 0 / 0.35));
+    clip-path: var(--forma);
+    background: var(--surface);
+  }
+  .avatar img {
+    object-fit: cover;
+    object-position: 50% 15%;
+  }
+  .maglia {
+    padding: 18% 12% 22%;
   }
   .maglia .stoffa { fill: var(--rosso); }
   .maglia .meta-dx { fill: var(--blu); }
@@ -60,8 +73,8 @@ const { maglia, portiere = false } = Astro.props;
   .portiere .maglia .meta-dx { fill: var(--oro); }
   .numero {
     position: absolute;
-    top: -0.2rem;
-    left: -0.35rem;
+    top: -0.25rem;
+    left: -0.45rem;
     min-width: 1.4em;
     padding: 0.05em 0.3em;
     border-radius: 0.4em;
