@@ -1,32 +1,24 @@
 {
-  "titolo": "Formazione tipo",
-  "modulo": "4-3-3",
+  "titolo": "",
+  "modulo": "4-2-3-1",
   "portiere": "Roberto Arangio",
   "difensori": [
+    "Ivan Pidalà",
+    "Paolo Faranda",
     "Francesco Mangano",
-    "Salvatore Lazzara",
-    "Marco Ricciardo",
-    "Ivan Pidalà"
+    "Marco Ricciardo"
   ],
   "centrocampisti": [
-    "Checco Drago",
-    "Antonino Zingales",
-    "Sebastiano Vicario"
+    "Daniele Casella",
+    "Diego Pidalà"
   ],
-  "trequartisti": [],
-  "attaccanti": [
-    "Vittorio Carcione",
-    "Leo Lazzara",
+  "trequartisti": [
+    "Matias De Gregorio",
+    "Sebastiano Vicario",
     "Antonino Pidalà"
   ],
-  "panchina": [
-    "Basilio Carrabotta",
-    "Paolo Faranda",
-    "Raffaele Cammareri",
-    "Diego Pidalà",
-    "Giuseppe Fabio",
-    "Stefano Sirna",
-    "Pietro Carcione",
-    "Matias De Gregorio"
-  ]
+  "attaccanti": [
+    "Vittorio Carcione"
+  ],
+  "panchina": []
 }
