@@ -101,12 +101,15 @@
   if (barra) {
     // La barra e' fissa in fondo allo schermo: finche' e' aperta la pagina si
     // allunga della sua altezza, altrimenti copre l'ultima riga del footer.
+    // --cookie-h serve anche al pulsante dell'inno, che si alza sopra la barra.
     const spazio = new ResizeObserver(() => {
       document.body.style.paddingBottom = `${barra.offsetHeight}px`;
+      document.documentElement.style.setProperty("--cookie-h", `${barra.offsetHeight}px`);
     });
     const nascondi = () => {
       spazio.disconnect();
       document.body.style.paddingBottom = "";
+      document.documentElement.style.removeProperty("--cookie-h");
       barra.classList.remove("is-visible");
       const fine = () => (barra.hidden = true);
       if (matchMedia("(prefers-reduced-motion: reduce)").matches) fine();
