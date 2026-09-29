@@ -93,9 +93,26 @@ collections:
       - name: "formazione"
         label: "Formazione titolare (home)"
         file: "src/data/formazione.json"
-        description: "Il campo con le maglie in home. Scegli il portiere e i giocatori di ogni reparto: il modulo (4-4-2, 4-3-3...) si calcola da solo. Servono esattamente 11 giocatori diversi, altrimenti in home resta il muro della rosa."
+        description: "La formazione della partita in home, da aggiornare ogni settimana. Scegli il portiere e i giocatori di ogni reparto: il modulo (4-4-2, 4-3-3...) si calcola da solo. Servono esattamente 11 titolari diversi, altrimenti in home resta il muro della rosa. La panchina e' facoltativa."
         fields:
           - { label: "Titolo", name: "titolo", widget: "string", required: false, hint: "Per esempio: Contro la Pro Tonnarella. Se resta vuoto: Formazione titolare." }
+          - label: "Modulo"
+            name: "modulo"
+            widget: "select"
+            required: false
+            default: "auto"
+            options:
+              - { label: "Automatico (si ricava dai reparti)", value: "auto" }
+              - { label: "4-4-2", value: "4-4-2" }
+              - { label: "4-3-3", value: "4-3-3" }
+              - { label: "4-2-3-1", value: "4-2-3-1" }
+              - { label: "4-3-1-2", value: "4-3-1-2" }
+              - { label: "4-5-1", value: "4-5-1" }
+              - { label: "3-5-2", value: "3-5-2" }
+              - { label: "3-4-3", value: "3-4-3" }
+              - { label: "5-3-2", value: "5-3-2" }
+              - { label: "5-4-1", value: "5-4-1" }
+            hint: "Decide la disposizione in campo: i giocatori vengono presi nell'ordine dei reparti qui sotto (difensori, centrocampisti, trequartisti, attaccanti). Per cambiare modulo basta cambiarlo qui."
           - { label: "Portiere", name: "portiere", widget: "relation", required: false, collection: "giocatori", value_field: "nome", search_fields: ["nome"], display_fields: ["nome"] }
           - label: "Difensori"
             name: "difensori"
@@ -120,6 +137,12 @@ collections:
             widget: "list"
             required: false
             hint: "Da sinistra a destra."
+            field: { label: "Giocatore", name: "giocatore", widget: "relation", collection: "giocatori", value_field: "nome", search_fields: ["nome"], display_fields: ["nome"] }
+          - label: "Panchina"
+            name: "panchina"
+            widget: "list"
+            required: false
+            hint: "Le riserve, compaiono sotto il campo. Chi e' gia' titolare viene ignorato."
             field: { label: "Giocatore", name: "giocatore", widget: "relation", collection: "giocatori", value_field: "nome", search_fields: ["nome"], display_fields: ["nome"] }
 
   - name: "sponsor"

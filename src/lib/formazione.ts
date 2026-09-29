@@ -6,11 +6,13 @@
 
 export interface DatiFormazione {
   titolo?: string;
+  modulo?: string; // "4-3-3", "4-2-3-1"...; "auto" o vuoto = dai reparti
   portiere?: string;
   difensori?: string[];
   centrocampisti?: string[];
   trequartisti?: string[];
   attaccanti?: string[];
+  panchina?: string[];
 }
 
 export interface GiocatoreRosa {
@@ -32,6 +34,7 @@ export interface Formazione {
   titolo: string;
   modulo: string; // es. "4-4-2", portiere escluso
   linee: Maglia[][]; // linee[0] e' il portiere, poi dalla difesa all'attacco
+  panchina: Maglia[]; // riserve, nell'ordine del pannello
 }
 
 const pulisci = (nomi?: string[]) => (nomi ?? []).map((n) => n.trim()).filter(Boolean);
@@ -49,9 +52,11 @@ export function componiFormazione(dati: DatiFormazione, rosa: GiocatoreRosa[]): 
   const nomi = [portiere, ...reparti.flat()];
   if (nomi.length !== 11 || new Set(nomi).size !== 11) return null;
 
-  // Piu' Pidala' o Lazzara in rosa: il solo cognome non basta a distinguerli.
+  // Piu' Pidala' o Lazzara in rosa: il solo cognome non basta a distinguerli,
+  // si aggiunge l'iniziale del nome come nelle app di fantacalcio ("Pidala' I.").
   const conteggio = new Map<string, number>();
-  for (const nome of new Set([...rosa.map((g) => g.nome), ...nomi])) {
+  const panchina = [...new Set(pulisci(dati.panchina))].filter((n) => !nomi.includes(n));
+  for (const nome of new Set([...rosa.map((g) => g.nome), ...nomi, ...panchina])) {
     const c = cognome(nome);
     conteggio.set(c, (conteggio.get(c) ?? 0) + 1);
   }
@@ -59,13 +64,25 @@ export function componiFormazione(dati: DatiFormazione, rosa: GiocatoreRosa[]): 
   const maglia = (nome: string): Maglia => {
     const g = rosa.find((x) => x.nome === nome);
     const c = cognome(nome);
-    const etichetta = (conteggio.get(c) ?? 0) > 1 && c !== nome ? `${nome[0]}. ${c}` : c;
+    const etichetta = (conteggio.get(c) ?? 0) > 1 && c !== nome ? `${c} ${nome[0]}.` : c;
     return { nome, etichetta, ruolo: g?.ruolo, numero: g?.numero, foto: g?.foto };
   };
 
+  // Modulo scelto nel pannello: decide lui quante maglie per linea, prendendo
+  // i giocatori nell'ordine dei reparti (difesa, centrocampo, trequarti,
+  // attacco). Cosi' passare da 4-4-2 a 4-3-3 non obbliga a spostare nomi.
+  const scelto = /^\d(-\d)+$/.test(dati.modulo ?? "") ? dati.modulo!.split("-").map(Number) : null;
+  let linee = reparti;
+  if (scelto && scelto.reduce((a, b) => a + b, 0) === 10) {
+    const fila = reparti.flat();
+    let k = 0;
+    linee = scelto.map((n) => fila.slice(k, (k += n)));
+  }
+
   return {
     titolo: dati.titolo?.trim() || "Formazione titolare",
-    modulo: reparti.map((r) => r.length).join("-"),
-    linee: [[maglia(portiere)], ...reparti.map((r) => r.map(maglia))],
+    modulo: linee.map((r) => r.length).join("-"),
+    linee: [[maglia(portiere)], ...linee.map((r) => r.map(maglia))],
+    panchina: panchina.map(maglia),
   };
 }

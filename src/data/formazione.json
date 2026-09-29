@@ -1,8 +1,10 @@
 {
   "titolo": "",
+  "modulo": "auto",
   "portiere": "",
   "difensori": [],
   "centrocampisti": [],
   "trequartisti": [],
-  "attaccanti": []
+  "attaccanti": [],
+  "panchina": []
 }

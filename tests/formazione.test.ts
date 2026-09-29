@@ -48,13 +48,13 @@ describe("componiFormazione", () => {
     expect(portiere.foto).toBe("/img/uploads/roberto-arangio.webp");
   });
 
-  it("mostra il cognome, con l'iniziale del nome se il cognome e' condiviso in rosa", () => {
+  it("mostra il cognome, con l'iniziale del nome dopo se il cognome e' condiviso in rosa", () => {
     const f = componiFormazione(quattroQuattroDue, rosa)!;
     const etichette = f.linee.flat().map((m) => m.etichetta);
     expect(etichette).toContain("Arangio");
     expect(etichette).toContain("De Gregorio");
-    expect(etichette).toContain("I. Pidalà");
-    expect(etichette).toContain("D. Pidalà");
+    expect(etichette).toContain("Pidalà I.");
+    expect(etichette).toContain("Pidalà D.");
   });
 
   it("un nome che non e' in rosa compare lo stesso, senza numero", () => {
@@ -83,6 +83,32 @@ describe("componiFormazione", () => {
   it("senza portiere non c'e' formazione", () => {
     const { portiere: _, ...senza } = quattroQuattroDue;
     expect(componiFormazione({ ...senza, attaccanti: ["Matias De Gregorio", "A2 Otto", "A3 Nove"] }, rosa)).toBeNull();
+  });
+
+  it("la panchina segue l'ordine del pannello, senza righe vuote ne' titolari", () => {
+    const f = componiFormazione(
+      { ...quattroQuattroDue, panchina: ["Paolo Faranda", "", "Roberto Arangio", "Riserva Nuova"] },
+      rosa
+    );
+    expect(f?.panchina.map((m) => m.nome)).toEqual(["Paolo Faranda", "Riserva Nuova"]);
+    expect(f?.panchina[0].etichetta).toBe("Faranda");
+  });
+
+  it("senza panchina la formazione resta valida", () => {
+    expect(componiFormazione(quattroQuattroDue, rosa)?.panchina).toEqual([]);
+  });
+
+  it("il modulo scelto nel pannello decide la disposizione, nell'ordine dei reparti", () => {
+    const f = componiFormazione({ ...quattroQuattroDue, modulo: "4-3-3" }, rosa)!;
+    expect(f.modulo).toBe("4-3-3");
+    expect(f.linee.map((l) => l.length)).toEqual([1, 4, 3, 3]);
+    // il quarto centrocampista passa in attacco
+    expect(f.linee[3].map((m) => m.nome)).toEqual(["C4 Sette", "Matias De Gregorio", "A2 Otto"]);
+  });
+
+  it("modulo automatico o non valido: si ricava dai reparti", () => {
+    expect(componiFormazione({ ...quattroQuattroDue, modulo: "auto" }, rosa)?.modulo).toBe("4-4-2");
+    expect(componiFormazione({ ...quattroQuattroDue, modulo: "4-4-3" }, rosa)?.modulo).toBe("4-4-2");
   });
 
   it("lo stesso giocatore due volte non e' una formazione valida", () => {

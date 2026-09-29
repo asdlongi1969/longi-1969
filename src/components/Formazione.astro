@@ -1,20 +1,26 @@
 ---
-// Formazione titolare "alla Fantagazzetta": mezzo campo visto dall'alto,
-// portiere in basso e attacco verso la meta' campo. Ogni maglia apre la
-// scheda del giocatore (PlayerDialog), come le card della rosa.
-import type { Formazione } from "../lib/formazione";
+// Formazione della partita come nelle app di fantacalcio: campo verticale
+// visto dall'alto, portiere in basso e attacco in alto, ogni giocatore con la
+// sua foto e il nome sotto; la panchina sotto il campo. Si aggiorna ogni
+// settimana dal pannello (voce "Formazione"). Chi non ha ancora una foto
+// compare con la maglia rossoblu' dimezzata. Toccando un giocatore si apre
+// la sua scheda (PlayerDialog), come le card della rosa.
+import type { Formazione, Maglia } from "../lib/formazione";
+import AvatarGiocatore from "./AvatarGiocatore.astro";
 
 interface Props {
   formazione: Formazione;
 }
 const { formazione } = Astro.props;
-const { titolo, modulo, linee } = formazione;
+const { titolo, modulo, linee, panchina } = formazione;
 
 // Altezza di ogni linea in % del campo: portiere fisso in basso, i reparti
-// distribuiti fra la difesa (70%) e l'attacco (12%).
+// distribuiti fra la difesa (68%) e l'attacco (10%).
 const reparti = linee.length - 1;
 const altezza = (i: number) =>
-  i === 0 ? 88 : reparti === 1 ? 40 : 70 - ((i - 1) * 58) / (reparti - 1);
+  i === 0 ? 89 : reparti === 1 ? 40 : 68 - ((i - 1) * 58) / (reparti - 1);
+
+const ruolo = (m: Maglia, portiere: boolean) => m.ruolo ?? (portiere ? "Portiere" : "");
 ---
 <section class="formazione-home" aria-labelledby="formazione-title">
   <div class="testata">
@@ -23,14 +29,12 @@ const altezza = (i: number) =>
   </div>
 
   <div class="campo">
-    <svg class="linee-campo" viewBox="0 0 68 64" aria-hidden="true" focusable="false">
-      <rect x="1" y="1" width="66" height="62" />
-      <path d="M24.85 1 A9.15 9.15 0 0 0 43.15 1" />
-      <circle cx="34" cy="1" r="0.5" class="punto" />
-      <rect x="13.85" y="46.5" width="40.3" height="16.5" />
-      <rect x="24.85" y="57.5" width="18.3" height="5.5" />
-      <circle cx="34" cy="52" r="0.5" class="punto" />
-      <path d="M26.69 46.5 A9.15 9.15 0 0 1 41.31 46.5" />
+    <svg class="linee-campo" viewBox="0 0 68 105" aria-hidden="true" focusable="false">
+      <rect x="1" y="1" width="66" height="103" rx="2" />
+      <line x1="1" y1="15" x2="67" y2="15" />
+      <circle cx="34" cy="15" r="9.15" />
+      <rect x="13.85" y="87.5" width="40.3" height="16.5" />
+      <rect x="24.85" y="98.5" width="18.3" height="5.5" />
     </svg>
 
     {linee.map((linea, i) => (
@@ -42,25 +46,12 @@ const altezza = (i: number) =>
               class:list={["giocatore", { portiere: i === 0 }]}
               data-player
               data-nome={m.nome}
-              data-ruolo={m.ruolo ?? (i === 0 ? "Portiere" : "")}
+              data-ruolo={ruolo(m, i === 0)}
               data-numero={m.numero ?? ""}
               data-foto={m.foto ?? ""}
               aria-label={`Apri la scheda di ${m.nome}`}
             >
-              <svg class="maglia" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
-                <path
-                  class="stoffa"
-                  d="M13 3 L8 5 L1 12 L6 18 L9 15.5 V37 H31 V15.5 L34 18 L39 12 L32 5 L27 3 Q20 8 13 3 Z"
-                />
-                <path class="meta-dx" d="M20 5.6 Q24 5.2 27 3 L32 5 L39 12 L34 18 L31 15.5 V37 H20 Z" />
-                <path
-                  class="bordo"
-                  d="M13 3 L8 5 L1 12 L6 18 L9 15.5 V37 H31 V15.5 L34 18 L39 12 L32 5 L27 3 Q20 8 13 3 Z"
-                />
-                {m.numero !== undefined && (
-                  <text x="20" y="27" text-anchor="middle">{m.numero}</text>
-                )}
-              </svg>
+              <AvatarGiocatore maglia={m} portiere={i === 0} />
               <span class="etichetta">{m.etichetta}</span>
             </button>
           </li>
@@ -69,6 +60,31 @@ const altezza = (i: number) =>
     ))}
   </div>
 
+  {panchina.length > 0 && (
+    <div class="panchina">
+      <h3 class="panchina-titolo">Panchina</h3>
+      <ul>
+        {panchina.map((m) => (
+          <li>
+            <button
+              type="button"
+              class="giocatore"
+              data-player
+              data-nome={m.nome}
+              data-ruolo={ruolo(m, false)}
+              data-numero={m.numero ?? ""}
+              data-foto={m.foto ?? ""}
+              aria-label={`Apri la scheda di ${m.nome}`}
+            >
+              <AvatarGiocatore maglia={m} />
+              <span class="etichetta">{m.etichetta}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+
   <p class="rimando"><a href="/squadra">Tutta la rosa e lo staff</a></p>
 </section>
 
@@ -76,9 +92,15 @@ const altezza = (i: number) =>
   .formazione-home {
     padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 4vw, 2.5rem) clamp(2rem, 6vw, 4rem);
   }
+  .testata,
+  .campo,
+  .panchina,
+  .rimando {
+    max-width: 480px;
+    margin-inline: auto;
+  }
   .testata {
-    max-width: 620px;
-    margin: 0 auto 1.25rem;
+    margin-bottom: 1.25rem;
     display: flex;
     align-items: baseline;
     justify-content: space-between;
@@ -96,21 +118,19 @@ const altezza = (i: number) =>
     letter-spacing: 0.04em;
   }
 
-  /* Prato a strisce: verde scuro e desaturato, per stare accanto al blu notte
-     del sito senza sembrare un adesivo. */
+  /* Campo verde brillante a fasce, angoli arrotondati: il linguaggio delle
+     app di fantacalcio, che i tifosi riconoscono al volo. */
   .campo {
     position: relative;
-    max-width: 620px;
-    margin: 0 auto;
-    aspect-ratio: 68 / 64;
+    aspect-ratio: 68 / 105;
+    border-radius: 1.25rem;
+    overflow: hidden;
     background: repeating-linear-gradient(
       to bottom,
-      oklch(0.46 0.1 150) 0 10%,
-      oklch(0.42 0.095 150) 10% 20%
+      oklch(0.64 0.17 145) 0 7.14%,
+      oklch(0.61 0.165 145) 7.14% 14.28%
     );
-    border: 2px solid oklch(0.36 0.08 150);
     box-shadow: 0 1.25rem 3rem -1.5rem oklch(0 0 0 / 0.7);
-    overflow: hidden;
   }
   .linee-campo {
     position: absolute;
@@ -118,12 +138,8 @@ const altezza = (i: number) =>
     width: 100%;
     height: 100%;
     fill: none;
-    stroke: oklch(0.97 0.01 150 / 0.75);
-    stroke-width: 0.35;
-  }
-  .linee-campo .punto {
-    fill: oklch(0.97 0.01 150 / 0.75);
-    stroke: none;
+    stroke: oklch(1 0 0 / 0.7);
+    stroke-width: 0.4;
   }
 
   .linea {
@@ -136,7 +152,7 @@ const altezza = (i: number) =>
     justify-content: space-evenly;
     list-style: none;
     margin: 0;
-    padding: 0 2%;
+    padding: 0 1%;
   }
   .linea li {
     flex: 0 1 0;
@@ -148,7 +164,7 @@ const altezza = (i: number) =>
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.15rem;
+    gap: 0.25rem;
     padding: 0;
     border: 0;
     background: none;
@@ -156,54 +172,69 @@ const altezza = (i: number) =>
     cursor: pointer;
     font: inherit;
   }
-  .maglia {
-    width: clamp(2.1rem, 8vw, 3.4rem);
-    height: auto;
-    filter: drop-shadow(0 0.15rem 0.2rem oklch(0 0 0 / 0.45));
-    transition: transform 0.2s var(--ease-out-quart);
-  }
-  /* Maglia dimezzata come lo scudo: rosso a sinistra, blu a destra. */
-  .maglia .stoffa { fill: var(--rosso); }
-  .maglia .meta-dx { fill: var(--blu); }
-  .maglia .bordo { fill: none; stroke: var(--oro); stroke-width: 1.2; stroke-linejoin: round; }
-  .portiere .maglia .stoffa,
-  .portiere .maglia .meta-dx { fill: var(--oro); }
-  .portiere .maglia .bordo { stroke: var(--bg); }
-  .maglia text {
-    font-family: var(--font-display);
-    font-size: 12px;
-    fill: var(--text);
-    paint-order: stroke;
-    stroke: oklch(0 0 0 / 0.35);
-    stroke-width: 1.5px;
-  }
-  .portiere .maglia text { fill: var(--bg); stroke: none; }
-
   .etichetta {
-    font-family: var(--font-display);
-    font-size: clamp(0.58rem, 2.2vw, 0.8rem);
-    text-transform: uppercase;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: clamp(0.75rem, 3.3vw, 1rem);
     line-height: 1.1;
     white-space: nowrap;
-    padding: 0.15rem 0.4rem;
-    background: oklch(0.2 0.04 262 / 0.82);
-    border-bottom: 2px solid var(--oro);
+    color: #fff;
+    text-shadow: 0 1px 2px oklch(0 0 0 / 0.55), 0 0 6px oklch(0 0 0 / 0.35);
   }
-  .giocatore:hover .maglia,
-  .giocatore:focus-visible .maglia {
+  .giocatore :global(.avatar) {
+    --avatar: clamp(3rem, 14vw, 4.25rem);
+  }
+  .giocatore:hover :global(.avatar),
+  .giocatore:focus-visible :global(.avatar) {
     transform: translateY(-3px) scale(1.06);
   }
   .giocatore:focus-visible {
     outline: 2px solid var(--oro);
     outline-offset: 3px;
+    border-radius: 0.5rem;
   }
-  @media (prefers-reduced-motion: reduce) {
-    .maglia { transition: none; }
+
+  .panchina {
+    margin-top: 1.5rem;
+    text-align: center;
+  }
+  .panchina-titolo {
+    display: inline-block;
+    margin: 0 0 1rem;
+    padding: 0.35rem 1.25rem;
+    border-radius: 999px;
+    background: var(--surface);
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .panchina ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem 0.75rem;
+  }
+  .panchina li {
+    width: 5rem;
+    display: flex;
+    justify-content: center;
+  }
+  .panchina .giocatore :global(.avatar) {
+    --avatar: 3.25rem;
+  }
+  .panchina .etichetta {
+    font-size: 0.8rem;
+    text-shadow: none;
+    white-space: normal;
   }
 
   .rimando {
-    max-width: 620px;
-    margin: 1.5rem auto 0;
+    margin-top: 1.5rem;
   }
   .rimando a {
     color: var(--oro);
