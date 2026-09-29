@@ -7,9 +7,9 @@ import Inno from "../components/Inno.astro";
 interface Props { title: string; description?: string }
 const { title, description = "Sito ufficiale Longi 1969" } = Astro.props;
 const fullTitle = `${title} - Longi 1969`;
-// Astro.site non è ancora configurato (dominio non deciso): finché non lo sarà
-// queste URL restano assolute solo rispetto all'origine corrente. Nessun
-// dominio è inventato qui.
+// Indirizzi assoluti sul dominio di Astro.site (astro.config.mjs). Il
+// canonical dice a Google che www.asdlongi.it e asdlongi.it sono la stessa
+// pagina: conta solo quella senza www.
 const pageUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
 const ogImage = new URL("/img/og.jpg", Astro.site ?? Astro.url).href;
 ---
@@ -21,6 +21,8 @@ const ogImage = new URL("/img/og.jpg", Astro.site ?? Astro.url).href;
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="icon" type="image/png" href="/img/stemma.png" />
+    <link rel="canonical" href={pageUrl} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
 
     <meta property="og:type" content="website" />
     <meta property="og:url" content={pageUrl} />

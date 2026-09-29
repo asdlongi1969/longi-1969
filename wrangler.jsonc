@@ -5,6 +5,9 @@
   "name": "longi-1969",
   "main": "worker/index.mjs",
   "compatibility_date": "2026-09-29",
+  // Il sito vive solo su asdlongi.it (e www): l'indirizzo tecnico *.workers.dev
+  // sarebbe un doppione per Google.
+  "workers_dev": false,
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
