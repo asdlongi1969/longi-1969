@@ -6,7 +6,9 @@ import CookieNotice from "../components/CookieNotice.astro";
 import Inno from "../components/Inno.astro";
 interface Props { title: string; description?: string }
 const { title, description = "Sito ufficiale Longi 1969" } = Astro.props;
-const fullTitle = `${title} - Longi 1969`;
+// Nei risultati di Google il titolo e' la prima cosa che si legge: nome
+// completo del club, e in home anche cosa e' e dove gioca.
+const fullTitle = Astro.url.pathname === "/" ? `ASD Longi 1969 · ${title}` : `${title} · ASD Longi 1969`;
 // Indirizzi assoluti sul dominio di Astro.site (astro.config.mjs). Il
 // canonical dice a Google che www.asdlongi.it e asdlongi.it sono la stessa
 // pagina: conta solo quella senza www.
