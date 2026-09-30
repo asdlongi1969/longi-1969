@@ -41,6 +41,12 @@ async function classifica(request, ctx) {
 export default {
   fetch(request, env, ctx) {
     const url = new URL(request.url);
+    // www.asdlongi.it e' un doppione: si passa all'indirizzo senza www.
+    if (url.hostname === "www.asdlongi.it") {
+      url.hostname = "asdlongi.it";
+      url.protocol = "https:";
+      return Response.redirect(url.href, 301);
+    }
     // Chi arriva in http:// passa a https:// (in locale no: li' c'e' solo http).
     if (url.protocol === "http:" && url.hostname !== "localhost" && url.hostname !== "127.0.0.1") {
       url.protocol = "https:";
