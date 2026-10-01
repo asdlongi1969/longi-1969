@@ -1,8 +1,9 @@
 // Formazione titolare della home, compilata dal pannello per reparti
 // (src/data/formazione.json). Il modulo non si sceglie: si ricava da quanti
 // giocatori ci sono in ogni reparto, cosi' non puo' mai contraddire i nomi.
-// Una formazione incompleta o sbagliata non rompe il sito: la funzione
-// restituisce null e la home torna a mostrare il muro della rosa.
+// La formazione non sparisce mai (regola del club): con 10 uomini, senza
+// portiere o con un nome ripetuto il campo mostra quello che c'e'. Solo un
+// pannello del tutto vuoto restituisce null, e la home mostra il muro della rosa.
 
 export interface DatiFormazione {
   titolo?: string;
@@ -44,13 +45,14 @@ const cognome = (nome: string) => nome.split(/\s+/).slice(1).join(" ") || nome;
 
 export function componiFormazione(dati: DatiFormazione, rosa: GiocatoreRosa[]): Formazione | null {
   const portiere = dati.portiere?.trim();
-  if (!portiere) return null;
 
+  // Un nome ripetuto conta una volta sola, al primo posto in cui compare.
+  const visti = new Set(portiere ? [portiere] : []);
   const reparti = [dati.difensori, dati.centrocampisti, dati.trequartisti, dati.attaccanti]
-    .map(pulisci)
+    .map((r) => pulisci(r).filter((n) => !visti.has(n) && visti.add(n)))
     .filter((r) => r.length > 0);
-  const nomi = [portiere, ...reparti.flat()];
-  if (nomi.length !== 11 || new Set(nomi).size !== 11) return null;
+  const nomi = [...visti];
+  if (nomi.length === 0) return null;
 
   // Piu' Pidala' o Lazzara in rosa: il solo cognome non basta a distinguerli,
   // si aggiunge l'iniziale del nome come nelle app di fantacalcio ("Pidala' I.").
@@ -71,10 +73,11 @@ export function componiFormazione(dati: DatiFormazione, rosa: GiocatoreRosa[]): 
   // Modulo scelto nel pannello: decide lui quante maglie per linea, prendendo
   // i giocatori nell'ordine dei reparti (difesa, centrocampo, trequarti,
   // attacco). Cosi' passare da 4-4-2 a 4-3-3 non obbliga a spostare nomi.
+  // Se i giocatori non bastano (o avanzano) per quel modulo, valgono i reparti.
   const scelto = /^\d(-\d)+$/.test(dati.modulo ?? "") ? dati.modulo!.split("-").map(Number) : null;
+  const fila = reparti.flat();
   let linee = reparti;
-  if (scelto && scelto.reduce((a, b) => a + b, 0) === 10) {
-    const fila = reparti.flat();
+  if (scelto && scelto.reduce((a, b) => a + b, 0) === fila.length) {
     let k = 0;
     linee = scelto.map((n) => fila.slice(k, (k += n)));
   }
@@ -82,7 +85,7 @@ export function componiFormazione(dati: DatiFormazione, rosa: GiocatoreRosa[]): 
   return {
     titolo: dati.titolo?.trim() || "Formazione titolare",
     modulo: linee.map((r) => r.length).join("-"),
-    linee: [[maglia(portiere)], ...linee.map((r) => r.map(maglia))],
+    linee: [portiere ? [maglia(portiere)] : [], ...linee.map((r) => r.map(maglia))],
     panchina: panchina.map(maglia),
   };
 }

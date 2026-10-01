@@ -75,14 +75,22 @@ describe("componiFormazione", () => {
     expect(f?.modulo).toBe("4-4-2");
   });
 
-  it("senza undici giocatori non c'e' formazione", () => {
-    expect(componiFormazione({ ...quattroQuattroDue, attaccanti: ["Matias De Gregorio"] }, rosa)).toBeNull();
-    expect(componiFormazione({}, rosa)).toBeNull();
+  it("in dieci la formazione resta, col modulo dai reparti", () => {
+    const f = componiFormazione({ ...quattroQuattroDue, modulo: "4-4-2", attaccanti: ["Matias De Gregorio"] }, rosa);
+    expect(f?.modulo).toBe("4-4-1");
+    expect(f?.linee.flat()).toHaveLength(10);
   });
 
-  it("senza portiere non c'e' formazione", () => {
+  it("solo un pannello del tutto vuoto non ha formazione", () => {
+    expect(componiFormazione({}, rosa)).toBeNull();
+    expect(componiFormazione({ portiere: "", difensori: ["", ""] }, rosa)).toBeNull();
+  });
+
+  it("senza portiere il campo mostra gli altri", () => {
     const { portiere: _, ...senza } = quattroQuattroDue;
-    expect(componiFormazione({ ...senza, attaccanti: ["Matias De Gregorio", "A2 Otto", "A3 Nove"] }, rosa)).toBeNull();
+    const f = componiFormazione(senza, rosa)!;
+    expect(f.linee[0]).toEqual([]);
+    expect(f.modulo).toBe("4-4-2");
   });
 
   it("la panchina segue l'ordine del pannello, senza righe vuote ne' titolari", () => {
@@ -111,9 +119,9 @@ describe("componiFormazione", () => {
     expect(componiFormazione({ ...quattroQuattroDue, modulo: "4-4-3" }, rosa)?.modulo).toBe("4-4-2");
   });
 
-  it("lo stesso giocatore due volte non e' una formazione valida", () => {
-    expect(
-      componiFormazione({ ...quattroQuattroDue, attaccanti: ["Matias De Gregorio", "Matias De Gregorio"] }, rosa)
-    ).toBeNull();
+  it("lo stesso giocatore due volte compare una volta sola", () => {
+    const f = componiFormazione({ ...quattroQuattroDue, attaccanti: ["Matias De Gregorio", "Matias De Gregorio"] }, rosa)!;
+    expect(f.linee.flat().filter((m) => m.nome === "Matias De Gregorio")).toHaveLength(1);
+    expect(f.modulo).toBe("4-4-1");
   });
 });

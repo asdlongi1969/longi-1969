@@ -93,7 +93,7 @@ collections:
       - name: "formazione"
         label: "Formazione titolare (home)"
         file: "src/data/formazione.json"
-        description: "La formazione della partita in home, da aggiornare ogni settimana. Scegli il portiere e i giocatori di ogni reparto: il modulo (4-4-2, 4-3-3...) si calcola da solo. Servono esattamente 11 titolari diversi, altrimenti in home resta il muro della rosa. La panchina e' facoltativa."
+        description: "La formazione della partita in home, da aggiornare ogni settimana. Scegli il portiere e i giocatori di ogni reparto: il modulo (4-4-2, 4-3-3...) si calcola da solo. La formazione resta sempre in home, anche incompleta (in 10, senza portiere): il campo mostra i giocatori inseriti. La panchina e' facoltativa."
         fields:
           - { label: "Titolo", name: "titolo", widget: "string", required: false, hint: "Per esempio: Contro la Pro Tonnarella. Se resta vuoto: Formazione titolare." }
           - label: "Modulo"

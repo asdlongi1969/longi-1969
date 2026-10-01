@@ -37,7 +37,7 @@ const ruolo = (m: Maglia, portiere: boolean) => m.ruolo ?? (portiere ? "Portiere
       <rect x="24.85" y="98.5" width="18.3" height="5.5" />
     </svg>
 
-    {linee.map((linea, i) => (
+    {linee.map((linea, i) => linea.length > 0 && (
       <ul class="linea" style={`--y:${altezza(i)}%`} aria-label={i === 0 ? "Portiere" : undefined}>
         {linea.map((m) => (
           <li>
