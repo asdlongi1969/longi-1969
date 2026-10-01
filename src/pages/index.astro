@@ -25,7 +25,8 @@ const rosa = ordinaRosa(await getCollection("giocatori"));
 const formazione = componiFormazione(datiFormazione, rosa.map((g) => g.data));
 ---
 {/* Ordine diverso dal sito gemello: dopo l'hero vengono SUBITO le partite
-    (quello che il tifoso cerca la domenica), poi i post social a mosaico. */}
+    (quello che il tifoso cerca la domenica). I post social a mosaico stanno
+    in fondo alla pagina, dopo gli sponsor (scelta del club, 01/10/2026). */}
 <Base title="Squadra di calcio di Longi (ME)" description="Sito ufficiale dell'ASD Longi 1969, la squadra di calcio di Longi (Messina) nel girone C di Seconda Categoria: formazione, rosa, classifica, storia e contatti.">
   <main id="main" tabindex="-1">
     <Hero />
@@ -37,18 +38,6 @@ const formazione = componiFormazione(datiFormazione, rosa.map((g) => g.data));
     <NextMatch />
 
     <Spaccatura />
-
-    {social.length > 0 && (
-      <section class="social-section" aria-labelledby="social-title">
-        <div class="section-inner">
-          <h2 id="social-title" class="font-display">Dai social</h2>
-          <div class="social-grid">
-            {social.map((p) => <SocialPost link={p.data.link} date={p.data.date} />)}
-          </div>
-          <p class="all-news"><a href="/social">Tutti i post</a></p>
-        </div>
-      </section>
-    )}
 
     <Rinascita />
 
@@ -73,6 +62,18 @@ const formazione = componiFormazione(datiFormazione, rosa.map((g) => g.data));
     <Spaccatura />
 
     <SponsorStrip />
+
+    {social.length > 0 && (
+      <section class="social-section" aria-labelledby="social-title">
+        <div class="section-inner">
+          <h2 id="social-title" class="font-display">Dai social</h2>
+          <div class="social-grid">
+            {social.map((p) => <SocialPost link={p.data.link} date={p.data.date} />)}
+          </div>
+          <p class="all-news"><a href="/social">Tutti i post</a></p>
+        </div>
+      </section>
+    )}
     <PlayerDialog />
   </main>
 </Base>
