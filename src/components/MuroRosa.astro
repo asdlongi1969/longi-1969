@@ -1,8 +1,8 @@
 ---
 // Il MURO ROSSOBLU': tutta la rosa come lastre diagonali affiancate, una
 // fisarmonica. A riposo ogni giocatore e' una lastra stretta col nome in
-// verticale; su hover/focus la lastra si allarga e rivela foto a colori,
-// nome e numero. Il click apre la stessa scheda dei PlayerCard (stessi
+// verticale; su hover/focus la lastra si allarga e rivela foto, nome e
+// numero. Il click apre la stessa scheda dei PlayerCard (stessi
 // attributi data-player letti da PlayerDialog).
 // Sostituisce la parete curva 3D, che resta la voce del sito gemello.
 import type { CollectionEntry } from "astro:content";
@@ -83,12 +83,6 @@ const { players } = Astro.props;
     object-fit: contain;
     object-position: bottom center;
     transform: skewX(6deg);
-    filter: grayscale(1) brightness(0.85);
-    transition: filter 0.4s var(--ease-out-quart);
-  }
-  .lastra:hover .lastra-foto,
-  .lastra:focus-visible .lastra-foto {
-    filter: grayscale(0) brightness(1);
   }
   .lastra-nome {
     position: absolute;
@@ -180,7 +174,6 @@ const { players } = Astro.props;
 
   @media (prefers-reduced-motion: reduce) {
     .lastra,
-    .lastra-foto,
     .lastra-nome,
     .lastra-numero {
       transition: none;
