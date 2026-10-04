@@ -2,6 +2,6 @@
 nome: Osvaldo Lazzara
 incarico: Dirigente
 sezione: Società
-foto: /img/uploads/6B2C070A-F543-4C7C-898B-22905CBB2953.png
+foto: /img/uploads/F4859A17-26FC-48DE-AB2E-B77C7C23BDC8.png
 ordine: 10
 ---
