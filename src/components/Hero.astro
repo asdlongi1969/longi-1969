@@ -32,6 +32,8 @@ const righeClaim = societa.claimHome.split(/\r?\n/).filter(Boolean);
      per frame invece di 17, cosi' una tacca di rotellina ne avanza due o tre
      e il movimento resta leggibile. */
   .hero { height: 450vh; }
+  /* video gia' partito da solo: lo spazio per sfogliare i frame non serve piu' */
+  .hero.visto { height: 100vh; }
   .stage { position: sticky; top: 0; height: 100vh; overflow: hidden; }
   canvas, #hero-fallback { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   canvas { display: none; }
@@ -87,10 +89,13 @@ const righeClaim = societa.claimHome.split(/\r?\n/).filter(Boolean);
     canvas.style.display = "block";
     fallback.style.display = "none";
     scorri.classList.add("on");
-    for (let i = 11; i <= count; i++) load(i); // resto in background
+    const resto: Promise<void>[] = [];
+    for (let i = 11; i <= count; i++) resto.push(load(i)); // resto in background
 
     const ctx = canvas.getContext("2d")!;
     let target = 1, current = 1, raf = 0;
+    // Posizione dell'avvio automatico: 1 finche' il video non parte da solo.
+    let auto = 1;
 
     // Disegna un frame in cover sul canvas, con opacita' data.
     function paint(img: HTMLImageElement, alpha: number) {
@@ -133,7 +138,7 @@ const righeClaim = societa.claimHome.split(/\r?\n/).filter(Boolean);
 
     function onScroll() {
       const range = Math.max(1, (document.getElementById("hero")!.offsetHeight) - innerHeight);
-      target = framePosition(scrollY, range, count);
+      target = Math.max(framePosition(scrollY, range, count), auto);
       if (!raf) raf = requestAnimationFrame(draw);
     }
 
@@ -146,5 +151,31 @@ const righeClaim = societa.claimHome.split(/\r?\n/).filter(Boolean);
     addEventListener("scroll", onScroll, { passive: true });
     addEventListener("resize", resize);
     resize(); onScroll();
+
+    // Se nessuno tocca niente, poco dopo il caricamento l'hero parte da solo
+    // come un video. Chi scorre, tocca o usa la tastiera prima lo guida con lo
+    // scroll come sempre. A video finito, con la pagina ancora in cima, l'hero
+    // si accorcia a una schermata: lo spazio per sfogliare i frame resterebbe
+    // uno scroll a vuoto sullo stemma fermo.
+    const hero = document.getElementById("hero")!;
+    const ATTESA = 1000, DURATA = 3500;
+    let toccato = scrollY > 5;
+    const tocca = () => { toccato = true; };
+    for (const t of ["wheel", "touchstart", "keydown", "pointerdown"]) addEventListener(t, tocca, { once: true, passive: true });
+    addEventListener("scroll", () => { if (scrollY > 5) tocca(); }, { passive: true });
+
+    const pronti = Promise.all(resto);
+    setTimeout(() => pronti.then(() => {
+      if (toccato) return;
+      const t0 = performance.now();
+      const passo = (ora: number) => {
+        const k = Math.min(1, (ora - t0) / DURATA);
+        auto = 1 + k * (count - 1);
+        onScroll();
+        if (k < 1) requestAnimationFrame(passo);
+        else if (scrollY < innerHeight * 0.25) hero.classList.add("visto");
+      };
+      requestAnimationFrame(passo);
+    }), ATTESA);
   }
 </script>
