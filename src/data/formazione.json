@@ -1,23 +1,17 @@
 {
   "titolo": "",
-  "modulo": "4-2-3-1",
-  "portiere": "Roberto Arangio",
-  "difensori": [
-    "Ivan Pidalà",
-    "Paolo Faranda",
-    "Francesco Mangano",
-    "Marco Ricciardo"
-  ],
-  "centrocampisti": [
-    "Daniele Casella"
-  ],
-  "trequartisti": [
-    "Matias De Gregorio",
-    "Sebastiano Vicario",
-    "Antonino Pidalà"
-  ],
-  "attaccanti": [
-    "Vittorio Carcione"
-  ],
+  "schieramento": {
+    "modulo": "4-2-3-1",
+    "portiere": "Roberto Arangio",
+    "terzino_sx": "Ivan Pidalà",
+    "centrale_sx": "Paolo Faranda",
+    "centrale_dx": "Francesco Mangano",
+    "terzino_dx": "Marco Ricciardo",
+    "mediano_sx": "Daniele Casella",
+    "trequartista_sx": "Matias De Gregorio",
+    "trequartista": "Sebastiano Vicario",
+    "trequartista_dx": "Antonino Pidalà",
+    "punta": "Vittorio Carcione"
+  },
   "panchina": []
 }
