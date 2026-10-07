@@ -1,6 +1,6 @@
 ---
 nome: Farmacia del Borgo
-# livello da confermare con la societa (main/tecnico/partner): per ora tutti partner
 livello: partner
-logo: /img/uploads/farmacia-del-borgo.webp
+logo: /img/uploads/6A673C60-98FC-455C-BB3B-248FB65AE69A.png
+url: ''
 ---
