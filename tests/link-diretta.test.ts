@@ -17,6 +17,11 @@ describe("link corto /diretta", () => {
     const r = await chiedi("https://asdlongi.it/diretta/");
     expect(r.headers.get("location")).toBe("https://asdlongi.it/#diretta");
   });
+  it("anche scritto con la maiuscola e per le richieste HEAD", async () => {
+    expect((await chiedi("https://asdlongi.it/Diretta")).headers.get("location")).toBe("https://asdlongi.it/#diretta");
+    const head = await worker.fetch(new Request("https://asdlongi.it/diretta", { method: "HEAD" }), env, ctx);
+    expect(head.status).toBe(302);
+  });
   it("il riquadro della diretta ha l'ancora #diretta", () => {
     expect(readFileSync("src/components/DirettaLive.astro", "utf8")).toMatch(/id="diretta"/);
   });
@@ -24,13 +29,18 @@ describe("link corto /diretta", () => {
 
 describe("Condividi la diretta", () => {
   const URL_DIRETTA = "https://asdlongi.it/diretta";
-  it("testo con il titolo della partita e il link", () => {
-    expect(testoCondivisione("Longi - Tusa", URL_DIRETTA)).toBe("Partita in diretta: Longi - Tusa 👉 https://asdlongi.it/diretta");
+  it("in onda: partita in diretta, col titolo", () => {
+    expect(testoCondivisione("Longi - Tusa", "in-onda")).toBe("Partita in diretta: Longi - Tusa");
+    expect(testoCondivisione("Longi - Tusa", "libera")).toBe("Partita in diretta: Longi - Tusa");
+  });
+  it("prima del fischio e in replica il testo dice la verita'", () => {
+    expect(testoCondivisione("Longi - Tusa", "attesa")).toBe("Prossima diretta: Longi - Tusa");
+    expect(testoCondivisione("Longi - Tusa", "replica")).toBe("Rivedi la partita: Longi - Tusa");
   });
   it("senza titolo resta un testo sensato", () => {
-    expect(testoCondivisione("  ", URL_DIRETTA)).toBe("Partita in diretta 👉 https://asdlongi.it/diretta");
+    expect(testoCondivisione("  ", "in-onda")).toBe("Partita in diretta");
   });
-  it("link di WhatsApp col testo codificato", () => {
-    expect(linkWhatsApp("a b & c 👉")).toBe("https://wa.me/?text=a%20b%20%26%20c%20%F0%9F%91%89");
+  it("link di WhatsApp col testo e il link, codificati", () => {
+    expect(linkWhatsApp("a b & c", URL_DIRETTA)).toBe(`https://wa.me/?text=${encodeURIComponent("a b & c 👉 https://asdlongi.it/diretta")}`);
   });
 });
