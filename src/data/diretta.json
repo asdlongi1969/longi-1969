@@ -2,5 +2,21 @@
   "attiva": true,
   "titolo": "Asd longi - Asd Sant’Antonino",
   "inizio": "",
-  "urlVideo": "https://www.twitch.tv/asdlongi"
+  "urlVideo": "https://www.twitch.tv/asdlongi",
+  "tabellino": {
+    "avversario": "",
+    "inCasa": true,
+    "nomeCortoNostro": "",
+    "nomeCortoAvversario": "",
+    "fuoriElenco": {
+      "nome": "",
+      "scudetto": ""
+    },
+    "golNostri": 0,
+    "golAvversari": 0,
+    "inizio1": "",
+    "fine1": "",
+    "inizio2": "",
+    "fine2": ""
+  }
 }
