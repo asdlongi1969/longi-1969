@@ -1,7 +1,7 @@
 {
-  "attiva": true,
-  "titolo": "Prova",
-  "inizio": "2026-10-12T22:36:00+02:00",
+  "attiva": false,
+  "titolo": "",
+  "inizio": "",
   "urlVideo": "https://www.twitch.tv/asdlongi",
   "tabellino": {
     "avversario": "921513",
