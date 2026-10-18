@@ -77,6 +77,12 @@ const tabellino = datiTabellino(diretta, squadre);
 
       {/* Dal fischio d'inizio in poi (diretta, poi replica); senza ora: subito */}
       <div class="live" data-live hidden={!senzaOra}>
+        {/* Canale Twitch con la diretta interrotta all'intervallo: i video salvati
+            sono due, qui compaiono i pulsanti per passare dall'uno all'altro (li
+            crea lo script, quando conosce i video). */}
+        {video?.canaleTwitch && (
+          <div class="parti" data-parti role="group" aria-label="Parte della partita" hidden></div>
+        )}
         <div class="tv" data-tv>
           <Tabellino dati={tabellino} />
           {video ? (
@@ -191,6 +197,29 @@ const tabellino = datiTabellino(diretta, squadre);
   .condividi button:hover,
   .condividi button:focus-visible { background: var(--oro); color: var(--bg); }
   .live { margin-top: 1rem; }
+  .parti {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 0 0 0.75rem;
+  }
+  .parti[hidden] { display: none; }
+  /* I pulsanti li crea lo script: senza :global non avrebbero lo stile. */
+  .parti :global(button) {
+    min-height: 44px;
+    background: none;
+    border: 1px solid var(--oro);
+    color: var(--oro);
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    padding: 0.4rem 1.1rem;
+    cursor: pointer;
+  }
+  .parti :global(button:hover),
+  .parti :global(button:focus-visible),
+  .parti :global(button[aria-pressed="true"]) { background: var(--oro); color: var(--bg); }
   .senza-video { margin: 0; }
   .senza-video[hidden], [data-video][hidden] { display: none; }
   .sr-only {
@@ -257,7 +286,7 @@ const tabellino = datiTabellino(diretta, squadre);
 </style>
 
 <script>
-  import { fase, sceltaTwitch, srcVideoTwitch, testoCondivisione, linkWhatsApp, type SceltaTwitch } from "../lib/diretta";
+  import { fase, sceltaTwitch, srcVideoTwitch, etichettaParte, parteScelta, testoCondivisione, linkWhatsApp, type SceltaTwitch } from "../lib/diretta";
 
   // Stati del riquadro: "attesa" (conto alla rovescia), "in-onda", "replica",
   // "libera" (senza ora del fischio: video subito visibile). Con un canale
@@ -279,7 +308,10 @@ const tabellino = datiTabellino(diretta, squadre);
     const canale = box.dataset.twitchCanale;
     const srcCanale = box.dataset.twitchSrc ?? "";
     const domini = (box.dataset.twitchDomini ?? "").split(",").filter(Boolean);
+    const parti = box.querySelector<HTMLElement>("[data-parti]");
     let twitch: SceltaTwitch | null = null;
+    let scelta: string | null = null; // parte scelta da chi guarda la replica
+    let partiMostrate = "";
 
     const data = (opzioni: Intl.DateTimeFormatOptions) => inizio!.toLocaleString("it-IT", opzioni);
 
@@ -297,6 +329,29 @@ const tabellino = datiTabellino(diretta, squadre);
         const nuovo = caricato.cloneNode() as HTMLIFrameElement;
         nuovo.setAttribute("src", src);
         caricato.replaceWith(nuovo);
+      }
+    };
+
+    // Pulsanti delle parti (1° e 2° tempo): ricreati solo se i video cambiano, per
+    // non far perdere il fuoco a chi li sta usando; la parte in corso e' segnata.
+    const disegnaParti = (ids: string[]) => {
+      if (!parti) return;
+      parti.hidden = ids.length < 2;
+      const chiave = ids.join(",");
+      if (chiave !== partiMostrate) {
+        partiMostrate = chiave;
+        parti.replaceChildren(...ids.map((id, i) => {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.dataset.parte = id;
+          b.textContent = etichettaParte(i, ids.length);
+          b.addEventListener("click", () => { scelta = id; disegna(); });
+          return b;
+        }));
+      }
+      const attuale = ids.length ? parteScelta(ids, scelta) : "";
+      for (const b of parti.querySelectorAll<HTMLButtonElement>("button")) {
+        b.setAttribute("aria-pressed", String(b.dataset.parte === attuale));
       }
     };
 
@@ -320,9 +375,8 @@ const tabellino = datiTabellino(diretta, squadre);
       let conLink = false;
       if (inDiretta) usaSrc(srcCanale);
       else if (salvato) {
-        usaSrc(srcVideoTwitch(salvato.id, domini));
-        // Diretta interrotta e ripresa: piu' video, il collegamento li mostra tutti.
-        conLink = salvato.altri && Boolean(replicaTwitch);
+        // Diretta interrotta e ripresa: piu' video, i pulsanti sotto li alternano.
+        usaSrc(srcVideoTwitch(parteScelta(salvato.ids, scelta), domini));
       } else {
         usaSrc(srcCanale);
         if (stato === "replica") {
@@ -343,6 +397,7 @@ const tabellino = datiTabellino(diretta, squadre);
       if (live) live.hidden = stato === "attesa";
       if (video) video.hidden = !conVideo;
       if (replicaTwitch) replicaTwitch.hidden = !conLink;
+      disegnaParti(salvato ? salvato.ids : []);
       if (etichetta) {
         etichetta.textContent =
           stato === "attesa" ? "Prossima diretta"
